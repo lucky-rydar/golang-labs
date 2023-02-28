@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/server"
 )
 
 func main() {
-	fmt.Println("hello world")
+	db.InitDB()
+	server.RunHttpServer()
 }
