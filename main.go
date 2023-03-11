@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	db.InitDB()
+	db.SetupDB()
 	server.RunHttpServer()
 }
