@@ -27,7 +27,7 @@ func AddStudentTicketHandler(w http.ResponseWriter, r *http.Request) {
 		ExpireDate:   request.ExpireDate,
 	}
 
-	err = logic.AddStudentTicket(ticket)
+	err = logic.AddStudentTicket(&ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

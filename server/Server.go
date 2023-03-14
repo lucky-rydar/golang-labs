@@ -29,6 +29,13 @@ func RunHttpServer() {
 	mux.HandleFunc("/student_tickets/add", AddStudentTicketHandler)
 	mux.HandleFunc("/student_tickets/bySerialNumber", GetStudentTicketBySerialNumberHandler)
 
+	mux.HandleFunc("/students/register", RegisterStudentHandler)
+	mux.HandleFunc("/students/contract/sign", SignContractHandler)
+	mux.HandleFunc("/students/settle", SettleHandler)
+	mux.HandleFunc("/students/resettle", ResettleHandler)
+	mux.HandleFunc("/students/unsettle", UnsettleHandler)
+	mux.HandleFunc("/students", GetStudentsHandler)
+
 	srv := &http.Server{
 		Addr:         ":8080",
 		Handler:      mux,
