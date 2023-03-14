@@ -17,3 +17,11 @@ func GetRooms() []models.Room {
 	db.DB.Find(&rooms)
 	return rooms
 }
+
+func GetRoomByPlaceId(placeId uint) models.Room {
+	var place models.Place
+	db.DB.First(&place, placeId)
+	var room models.Room
+	db.DB.First(&room, place.RoomId)
+	return room
+}
