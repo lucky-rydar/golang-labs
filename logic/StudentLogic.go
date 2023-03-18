@@ -109,6 +109,18 @@ func Settle(student_id uint, place_id uint) error {
 		return ret
 	}
 
+	// check room gender
+	room := models.Room{}
+	ret = GetRoomById(place.RoomId, &room)
+	if ret != nil {
+		return ret
+	}
+
+	if room.IsMale != student.IsMale {
+		ret = fmt.Errorf("Student is not the same gender as the room")
+		return ret
+	}
+
 	student.PlaceId = place_id
 	place.IsFree = false
 
