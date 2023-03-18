@@ -36,6 +36,8 @@ func RunHttpServer() {
 	mux.HandleFunc("/student/resettle", ResettleHandler)
 	mux.HandleFunc("/students", GetStudentsHandler)
 
+	mux.HandleFunc("/dormitory/load/stats", GetDormitoryLoadHandler)
+
 	srv := &http.Server{
 		Addr:         ":8080",
 		Handler:      mux,

@@ -25,3 +25,12 @@ func GetRoomByPlaceId(placeId uint) models.Room {
 	db.DB.First(&room, place.RoomId)
 	return room
 }
+
+func GetRoomById(id uint, room *models.Room) error {
+	var err error
+	db.DB.First(&room, id)
+	if room.Id == 0 {
+		err = fmt.Errorf("Room with id %d not found", id)
+	}
+	return err
+}

@@ -55,3 +55,19 @@ func GetPlaceById(id uint, place *models.Place) error {
 	}
 	return err
 }
+
+func GetPlacesByParams(isMale bool, isFree bool) []models.Place {
+	var places []models.Place
+	db.DB.Where("is_free = ?", isFree).Find(&places)
+
+	var placesRet []models.Place
+	for i := 0; i < len(places); i++ {
+		var room models.Room
+		db.DB.First(&room, places[i].RoomId)
+		if room.IsMale == isMale {
+			placesRet = append(placesRet, places[i])
+		}
+	}
+
+	return placesRet
+}
