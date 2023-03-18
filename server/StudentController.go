@@ -78,6 +78,37 @@ type SettleRequest struct {
 }
 
 func SettleHandler(w http.ResponseWriter, r *http.Request) {
+	var request SettleRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = logic.Settle(request.StudentId, request.PlaceId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+}
+
+type UnsettleRequest struct {
+	StudentId uint
+}
+
+func UnsettleHandler(w http.ResponseWriter, r *http.Request) {
+	var request UnsettleRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = logic.Unsettle(request.StudentId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 }
 
 type ResettleRequest struct {
@@ -86,13 +117,18 @@ type ResettleRequest struct {
 }
 
 func ResettleHandler(w http.ResponseWriter, r *http.Request) {
-}
+	var request ResettleRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-type UnsettleRequest struct {
-	StudentId uint
-}
-
-func UnsettleHandler(w http.ResponseWriter, r *http.Request) {
+	err = logic.Resettle(request.StudentId, request.PlaceId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 }
 
 func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {

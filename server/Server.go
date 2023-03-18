@@ -29,11 +29,11 @@ func RunHttpServer() {
 	mux.HandleFunc("/student_tickets/add", AddStudentTicketHandler)
 	mux.HandleFunc("/student_tickets/bySerialNumber", GetStudentTicketBySerialNumberHandler)
 
-	mux.HandleFunc("/students/register", RegisterStudentHandler)
-	mux.HandleFunc("/students/contract/sign", SignContractHandler)
-	mux.HandleFunc("/students/settle", SettleHandler)
-	mux.HandleFunc("/students/resettle", ResettleHandler)
-	mux.HandleFunc("/students/unsettle", UnsettleHandler)
+	mux.HandleFunc("/student/register", RegisterStudentHandler)
+	mux.HandleFunc("/student/contract/sign", SignContractHandler)
+	mux.HandleFunc("/student/settle", SettleHandler)
+	mux.HandleFunc("/student/unsettle", UnsettleHandler)
+	mux.HandleFunc("/student/resettle", ResettleHandler)
 	mux.HandleFunc("/students", GetStudentsHandler)
 
 	srv := &http.Server{

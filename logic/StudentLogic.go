@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/it-02/dormitory/db"
 	"github.com/it-02/dormitory/models"
@@ -88,15 +89,102 @@ func SignContract(student_id uint, student_ticket_number string) error {
 }
 
 func Settle(student_id uint, place_id uint) error {
-	return nil
-}
+	var ret error
 
-func Resettle(student_id uint, place_id uint) error {
-	return nil
+	student := GetStudentById(student_id)
+	if student.PlaceId != 0 {
+		return fmt.Errorf("Student is already settled, call resettle")
+	}
+
+	contract := models.Contract{}
+	err := GetContractById(student.ContractId, &contract)
+	if err != nil {
+		ret = err
+		return ret
+	}
+
+	if contract.ExpireDate.Before(time.Now()) {
+		ret = fmt.Errorf("Contract is expired")
+		return ret
+	}
+
+
+	place := models.Place{}
+	err = GetPlaceById(place_id, &place)
+	if err != nil {
+		ret = err
+		return ret
+	}
+
+	if !place.IsFree {
+		ret = fmt.Errorf("Place is not free")
+		return ret
+	}
+
+	student.PlaceId = place_id
+	place.IsFree = false
+
+	db.DB.Save(&student)
+	db.DB.Save(&place)
+
+	return ret
 }
 
 func Unsettle(student_id uint) error {
-	return nil
+	var ret error
+
+	student := GetStudentById(student_id)
+	if student.PlaceId == 0 {
+		return fmt.Errorf("Student is not settled")
+	}
+
+	place := models.Place{}
+	err := GetPlaceById(student.PlaceId, &place)
+	if err != nil {
+		ret = err
+		return ret
+	}
+
+	student.PlaceId = 0
+	place.IsFree = true
+
+	db.DB.Save(&student)
+	db.DB.Save(&place)
+
+	return ret
+}
+
+func Resettle(student_id uint, place_id uint) error {
+	var ret error
+
+	// if place is not free return error
+	place := models.Place{}
+	err := GetPlaceById(place_id, &place)
+	if err != nil {
+		ret = err
+		return ret
+	}
+
+	if !place.IsFree {
+		ret = fmt.Errorf("Place is not free")
+		return ret
+	}
+
+	// unsettle the student
+	err = Unsettle(student_id)
+	if err != nil {
+		ret = err
+		return ret
+	}
+
+	// settle the student
+	err = Settle(student_id, place_id)
+	if err != nil {
+		ret = err
+		return ret
+	}
+
+	return ret
 }
 
 func GetStudents() []models.Student {
