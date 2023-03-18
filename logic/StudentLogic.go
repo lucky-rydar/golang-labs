@@ -22,19 +22,14 @@ func AddStudent(student *models.Student) error {
 }
 
 func RegisterStudent(student *models.Student, student_ticket *models.StudentTicket) error {
-	var ret error
-	ret = nil
-
-	err := AddStudentTicket(student_ticket)
-	if err != nil {
-		ret = err
+	ret := AddStudentTicket(student_ticket)
+	if ret != nil {
 		return ret
 	}
 
 	student.StudentTicketId = student_ticket.Id
-	err = AddStudent(student)
-	if err != nil {
-		ret = err
+	ret = AddStudent(student)
+	if ret != nil {
 		return ret
 	}
 
@@ -42,14 +37,11 @@ func RegisterStudent(student *models.Student, student_ticket *models.StudentTick
 }
 
 func SetContract(student_id uint, contract_id uint) error {
-	var ret error
-	ret = nil
-
 	student := GetStudentById(student_id)
 	student.ContractId = contract_id
 	db.DB.Save(&student)
 
-	return ret
+	return nil
 }
 
 func SignContract(student_id uint, student_ticket_number string) error {
@@ -89,17 +81,14 @@ func SignContract(student_id uint, student_ticket_number string) error {
 }
 
 func Settle(student_id uint, place_id uint) error {
-	var ret error
-
 	student := GetStudentById(student_id)
 	if student.PlaceId != 0 {
 		return fmt.Errorf("Student is already settled, call resettle")
 	}
 
 	contract := models.Contract{}
-	err := GetContractById(student.ContractId, &contract)
-	if err != nil {
-		ret = err
+	ret := GetContractById(student.ContractId, &contract)
+	if ret != nil {
 		return ret
 	}
 
@@ -110,9 +99,8 @@ func Settle(student_id uint, place_id uint) error {
 
 
 	place := models.Place{}
-	err = GetPlaceById(place_id, &place)
-	if err != nil {
-		ret = err
+	ret = GetPlaceById(place_id, &place)
+	if ret != nil {
 		return ret
 	}
 
@@ -131,17 +119,14 @@ func Settle(student_id uint, place_id uint) error {
 }
 
 func Unsettle(student_id uint) error {
-	var ret error
-
 	student := GetStudentById(student_id)
 	if student.PlaceId == 0 {
 		return fmt.Errorf("Student is not settled")
 	}
 
 	place := models.Place{}
-	err := GetPlaceById(student.PlaceId, &place)
-	if err != nil {
-		ret = err
+	ret := GetPlaceById(student.PlaceId, &place)
+	if ret != nil {
 		return ret
 	}
 
@@ -155,13 +140,10 @@ func Unsettle(student_id uint) error {
 }
 
 func Resettle(student_id uint, place_id uint) error {
-	var ret error
-
 	// if place is not free return error
 	place := models.Place{}
-	err := GetPlaceById(place_id, &place)
-	if err != nil {
-		ret = err
+	ret := GetPlaceById(place_id, &place)
+	if ret != nil {
 		return ret
 	}
 
@@ -171,16 +153,14 @@ func Resettle(student_id uint, place_id uint) error {
 	}
 
 	// unsettle the student
-	err = Unsettle(student_id)
-	if err != nil {
-		ret = err
+	ret = Unsettle(student_id)
+	if ret != nil {
 		return ret
 	}
 
 	// settle the student
-	err = Settle(student_id, place_id)
-	if err != nil {
-		ret = err
+	ret = Settle(student_id, place_id)
+	if ret != nil {
 		return ret
 	}
 
