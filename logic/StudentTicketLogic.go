@@ -7,7 +7,7 @@ import (
 	"github.com/it-02/dormitory/models"
 )
 
-func AddStudentTicket(ticket models.StudentTicket) error {
+func AddStudentTicket(ticket *models.StudentTicket) error {
 	var err error
 	var existingTicket models.StudentTicket
 	db.DB.First(&existingTicket, "serial_number = ?", ticket.SerialNumber)
