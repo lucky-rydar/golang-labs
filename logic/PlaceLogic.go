@@ -7,22 +7,6 @@ import (
 	"github.com/it-02/dormitory/models"
 )
 
-func AddPlace(place models.Place) error {
-	var ret error
-	ret = nil
-
-	var room models.Room
-	db.DB.First(&room, place.RoomId)
-	if room.Id != 0 {
-		db.DB.Create(&place)
-	} else {
-		ret = fmt.Errorf("Room not found")
-		fmt.Printf("Room not found")
-	}
-
-	return ret
-}
-
 func GetPlaces() []models.Place {
 	var places []models.Place
 	db.DB.Find(&places)
