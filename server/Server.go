@@ -17,7 +17,6 @@ func RunHttpServer() {
 	mux.HandleFunc("/rooms/byPlaceId", GetRoomByPlaceIdHandler)
 	
 	mux.HandleFunc("/places", GetPlacesHandler)
-	mux.HandleFunc("/places/add", AddPlaceHandler)
 	mux.HandleFunc("/places/free", GetFreePlacesHandler)
 	mux.HandleFunc("/places/free/byRoomId", GetFreePlacesByRoomIdHandler)
 	mux.HandleFunc("/places/byRoomId", GetPlacesByRoomIdHandler)

@@ -7,9 +7,19 @@ import (
 	"github.com/it-02/dormitory/models"
 )
 
+// the function adds a room and creates places for it
 func AddRoom(room models.Room) {
 	db.DB.Create(&room)
 	fmt.Printf("Room {%d, %t, %f} inserted\n", room.Id, room.IsMale, room.AreaSqMeters)
+
+	// create places for room as at least please per 4 sq meters
+	placesCount := int(room.AreaSqMeters / 4)
+	for i := 0; i < placesCount; i++ {
+		place := models.Place{
+			RoomId: room.Id,
+		}
+		db.DB.Create(&place)
+	}
 }
 
 func GetRooms() []models.Room {
