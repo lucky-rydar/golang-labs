@@ -3,46 +3,10 @@ package db
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
-
-type Contract struct {
-	Id         uint `gorm:"primaryKey;autoIncrement"`
-	SignDate   time.Time
-	ExpireDate time.Time
-}
-
-type Place struct {
-	Id           uint `gorm:"primaryKey;autoIncrement"`
-	IsFree	     bool
-	RoomId       uint
-}
-
-type Room struct {
-	Id           uint `gorm:"primaryKey;autoIncrement"`
-	Number	     string // number is not only an integer, but also a letter
-	IsMale       bool
-	AreaSqMeters float32
-}
-
-type Student struct {
-	Id              uint `gorm:"primaryKey;autoIncrement"`
-	Name            string
-	Surname         string
-	IsMale          bool
-	ContractId      uint
-	StudentTicketId uint
-	PlaceId         uint
-}
-
-type StudentTicket struct {
-	Id           uint `gorm:"primaryKey;autoIncrement"`
-	SerialNumber string
-	ExpireDate   time.Time
-}
 
 var DB *gorm.DB
 
