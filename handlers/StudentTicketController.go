@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/service"
 	"github.com/it-02/dormitory/db"
 )
 
@@ -27,7 +27,7 @@ func AddStudentTicketHandler(w http.ResponseWriter, r *http.Request) {
 		ExpireDate:   request.ExpireDate,
 	}
 
-	err = repository.AddStudentTicket(&ticket)
+	err = service.AddStudentTicket(&ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -35,7 +35,7 @@ func AddStudentTicketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetStudentTicketsHandler(w http.ResponseWriter, r *http.Request) {
-	tickets := repository.GetStudentTickets()
+	tickets := service.GetStudentTickets()
 	err := json.NewEncoder(w).Encode(tickets)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,7 +55,7 @@ func GetStudentTicketBySerialNumberHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	ticket := repository.GetStudentTicketBySerialNumber(request.SerialNumber)
+	ticket := service.GetStudentTicketBySerialNumber(request.SerialNumber)
 	err = json.NewEncoder(w).Encode(ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

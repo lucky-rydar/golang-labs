@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/service"
 	"github.com/it-02/dormitory/db"
 )
 
@@ -29,12 +29,12 @@ func AddRoomHandler(w http.ResponseWriter, r *http.Request) {
 		Number:       request.Number,
 	}
 
-	repository.AddRoom(room)
+	service.AddRoom(room)
 }
 
 // has no request body
 func GetRoomsHandler(w http.ResponseWriter, r *http.Request) {
-	rooms := repository.GetRooms()
+	rooms := service.GetRooms()
 	err := json.NewEncoder(w).Encode(rooms)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,7 +55,7 @@ func GetRoomByPlaceIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	room := repository.GetRoomByPlaceId(request.PlaceId)
+	room := service.GetRoomByPlaceId(request.PlaceId)
 	err = json.NewEncoder(w).Encode(room)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -76,8 +76,8 @@ func GetRoomStatsByNumberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var roomStats repository.RoomStats
-	err = repository.GetRoomStatsByNumber(request.Number, &roomStats)
+	var roomStats service.RoomStats
+	err = service.GetRoomStatsByNumber(request.Number, &roomStats)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

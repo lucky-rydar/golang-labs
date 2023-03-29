@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/service"
 )
 
 func AddContractHandler(w http.ResponseWriter, r *http.Request) {
-	contract := repository.AddContract()
+	contract := service.AddContract()
 	err := json.NewEncoder(w).Encode(contract)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -17,7 +17,7 @@ func AddContractHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetContractsHandler(w http.ResponseWriter, r *http.Request) {
-	contracts := repository.GetContracts()
+	contracts := service.GetContracts()
 	err := json.NewEncoder(w).Encode(contracts)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
