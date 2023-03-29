@@ -1,15 +1,16 @@
-package logic
+package repository
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/it-02/dormitory/db"
-	"github.com/it-02/dormitory/models"
 )
 
-func AddContract() models.Contract {
-	contract := models.Contract{
+
+
+func AddContract() db.Contract {
+	contract := db.Contract{
 		SignDate:   time.Now(),
 		ExpireDate: time.Now().AddDate(1, 0, 0),
 	}
@@ -20,13 +21,13 @@ func AddContract() models.Contract {
 	return contract
 }
 
-func GetContracts() []models.Contract {
-	var contracts []models.Contract
+func GetContracts() []db.Contract {
+	var contracts []db.Contract
 	db.DB.Find(&contracts)
 	return contracts
 }
 
-func GetContractById(id uint, contract *models.Contract) error {
+func GetContractById(id uint, contract *db.Contract) error {
 	var err error
 	db.DB.First(&contract, id)
 	if contract.Id == 0 {
@@ -37,7 +38,7 @@ func GetContractById(id uint, contract *models.Contract) error {
 
 func RemoveContractById(id uint) error {
 	var err error
-	var contract models.Contract
+	var contract db.Contract
 	err = GetContractById(id, &contract)
 	if err == nil {
 		db.DB.Delete(&contract)

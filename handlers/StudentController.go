@@ -1,12 +1,13 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"encoding/json"
 	"time"
 
-	"github.com/it-02/dormitory/models"
-	"github.com/it-02/dormitory/logic"
+	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/db"
 )
 
 type AddSrudentRequest struct {
@@ -25,7 +26,7 @@ func RegisterStudentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	student := models.Student{
+	student := db.Student{
 		Name:    request.Name,
 		Surname: request.Surname,
 		IsMale:  request.IsMale,
@@ -34,12 +35,12 @@ func RegisterStudentHandler(w http.ResponseWriter, r *http.Request) {
 		PlaceId: 0,
 	}
 
-	student_ticket := models.StudentTicket{
+	student_ticket := db.StudentTicket{
 		SerialNumber: request.StudentTicketNumber,
 		ExpireDate:   request.StudentTicketExpireDate,
 	}
 
-	err = logic.RegisterStudent(&student, &student_ticket)
+	err = service.RegisterStudent(&student, &student_ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -65,7 +66,7 @@ func SignContractHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = logic.SignContract(request.StudentId, request.StudentTicketNumber)
+	err = service.SignContract(request.StudentId, request.StudentTicketNumber)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -85,7 +86,7 @@ func SettleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = logic.Settle(request.StudentId, request.PlaceId)
+	err = service.Settle(request.StudentId, request.PlaceId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -104,7 +105,7 @@ func UnsettleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = logic.Unsettle(request.StudentId)
+	err = service.Unsettle(request.StudentId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -124,7 +125,7 @@ func ResettleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = logic.Resettle(request.StudentId, request.PlaceId)
+	err = service.Resettle(request.StudentId, request.PlaceId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -132,7 +133,7 @@ func ResettleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
-	students := logic.GetStudents()
+	students := repository.GetStudents()
 	err := json.NewEncoder(w).Encode(students)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

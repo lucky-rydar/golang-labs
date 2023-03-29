@@ -1,21 +1,18 @@
-package logic
+package repository
 
 import (
 	"fmt"
 
 	"github.com/it-02/dormitory/db"
-	"github.com/it-02/dormitory/models"
 )
 
-// the function adds a room and creates places for it
-func AddRoom(room models.Room) {
+func AddRoom(room db.Room) {
 	db.DB.Create(&room)
 	fmt.Printf("Room {%d, %t, %f} inserted\n", room.Id, room.IsMale, room.AreaSqMeters)
 
-	// create places for room as at least please per 4 sq meters
 	placesCount := int(room.AreaSqMeters / 4)
 	for i := 0; i < placesCount; i++ {
-		place := models.Place{
+		place := db.Place{
 			RoomId: room.Id,
 			IsFree: true,
 		}
@@ -23,21 +20,21 @@ func AddRoom(room models.Room) {
 	}
 }
 
-func GetRooms() []models.Room {
-	var rooms []models.Room
+func GetRooms() []db.Room {
+	var rooms []db.Room
 	db.DB.Find(&rooms)
 	return rooms
 }
 
-func GetRoomByPlaceId(placeId uint) models.Room {
-	var place models.Place
+func GetRoomByPlaceId(placeId uint) db.Room {
+	var place db.Place
 	db.DB.First(&place, placeId)
-	var room models.Room
+	var room db.Room
 	db.DB.First(&room, place.RoomId)
 	return room
 }
 
-func GetRoomById(id uint, room *models.Room) error {
+func GetRoomById(id uint, room *db.Room) error {
 	var err error
 	db.DB.First(&room, id)
 	if room.Id == 0 {
@@ -50,13 +47,13 @@ type RoomStats struct {
 	Number string
 	IsMale bool
 	AreaSqMeters float32
-	OccupiedPlaces []models.Place
-	FreePlaces []models.Place
-	StudentsLiving []models.Student
+	OccupiedPlaces []db.Place
+	FreePlaces []db.Place
+	StudentsLiving []db.Student
 }
 
 func GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
-	var room models.Room
+	var room db.Room
 	db.DB.Where("number = ?", number).First(&room)
 	if room.Id == 0 {
 		return fmt.Errorf("Room with number %s not found", number)
@@ -65,11 +62,11 @@ func GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
 	room_stats.IsMale = room.IsMale
 	room_stats.AreaSqMeters = room.AreaSqMeters
 
-	var occupiedPlaces []models.Place
+	var occupiedPlaces []db.Place
 	db.DB.Where("room_id = ? AND is_free = ?", room.Id, false).Find(&occupiedPlaces)
 	room_stats.OccupiedPlaces = occupiedPlaces
 
-	var freePlaces []models.Place
+	var freePlaces []db.Place
 	db.DB.Where("room_id = ? AND is_free = ?", room.Id, true).Find(&freePlaces)
 	room_stats.FreePlaces = freePlaces
 
@@ -78,7 +75,7 @@ func GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
 		occupiedPlaceIds = append(occupiedPlaceIds, place.Id)
 	}
 
-	var studentsLiving []models.Student
+	var studentsLiving []db.Student
 	db.DB.Where("place_id IN (?)", occupiedPlaceIds).Find(&studentsLiving)
 	room_stats.StudentsLiving = studentsLiving
 

@@ -1,12 +1,12 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"encoding/json"
 	"time"
 
-	"github.com/it-02/dormitory/models"
-	"github.com/it-02/dormitory/logic"
+	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/db"
 )
 
 type AddStudentTicketRequest struct {
@@ -22,12 +22,12 @@ func AddStudentTicketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ticket := models.StudentTicket{
+	ticket := db.StudentTicket{
 		SerialNumber: request.SerialNumber,
 		ExpireDate:   request.ExpireDate,
 	}
 
-	err = logic.AddStudentTicket(&ticket)
+	err = repository.AddStudentTicket(&ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -35,7 +35,7 @@ func AddStudentTicketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetStudentTicketsHandler(w http.ResponseWriter, r *http.Request) {
-	tickets := logic.GetStudentTickets()
+	tickets := repository.GetStudentTickets()
 	err := json.NewEncoder(w).Encode(tickets)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,7 +55,7 @@ func GetStudentTicketBySerialNumberHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	ticket := logic.GetStudentTicketBySerialNumber(request.SerialNumber)
+	ticket := repository.GetStudentTicketBySerialNumber(request.SerialNumber)
 	err = json.NewEncoder(w).Encode(ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

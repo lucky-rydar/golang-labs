@@ -1,11 +1,11 @@
-package server
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/logic"
-	"github.com/it-02/dormitory/models"
+	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/db"
 )
 
 type AddRoomRequest struct {
@@ -23,18 +23,18 @@ func AddRoomHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	room := models.Room{
+	room := db.Room{
 		IsMale:       request.IsMale,
 		AreaSqMeters: request.AreaSqMeters,
 		Number:       request.Number,
 	}
 
-	logic.AddRoom(room)
+	repository.AddRoom(room)
 }
 
 // has no request body
 func GetRoomsHandler(w http.ResponseWriter, r *http.Request) {
-	rooms := logic.GetRooms()
+	rooms := repository.GetRooms()
 	err := json.NewEncoder(w).Encode(rooms)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,7 +55,7 @@ func GetRoomByPlaceIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	room := logic.GetRoomByPlaceId(request.PlaceId)
+	room := repository.GetRoomByPlaceId(request.PlaceId)
 	err = json.NewEncoder(w).Encode(room)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -76,8 +76,8 @@ func GetRoomStatsByNumberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var roomStats logic.RoomStats
-	err = logic.GetRoomStatsByNumber(request.Number, &roomStats)
+	var roomStats repository.RoomStats
+	err = repository.GetRoomStatsByNumber(request.Number, &roomStats)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
