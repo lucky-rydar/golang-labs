@@ -41,6 +41,9 @@ func RunHttpServer() {
 
 	mux.HandleFunc("/dormitory/load/stats", handlers.GetDormitoryLoadHandler)
 
+	mux.HandleFunc("/user/register", handlers.RegisterUserHandler)
+	mux.HandleFunc("/user/login", handlers.LoginUserHandler)
+
 	srv := &http.Server{
 		Addr:         ":8080",
 		Handler:      mux,
