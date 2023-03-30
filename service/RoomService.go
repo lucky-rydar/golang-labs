@@ -7,8 +7,17 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-func AddRoom(room db.Room) {
-	repository.AddRoom(room)
+func AddRoom(uuid string, room *db.Room) error {
+	if !IsUserAdmin(uuid) {
+		return fmt.Errorf("User is not admin")
+	}
+
+	if !repository.IsRoomNumberExists(room.Number) {
+		repository.AddRoom(room)
+	} else {
+		return fmt.Errorf("Room with number %s already exists", room.Number)
+	}
+	return nil
 }
 
 func GetRooms() []db.Room {

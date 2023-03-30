@@ -6,8 +6,8 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-func AddRoom(room db.Room) {
-	db.DB.Create(&room)
+func AddRoom(room *db.Room) {
+	db.DB.Create(room)
 	fmt.Printf("Room {%d, %t, %f} inserted\n", room.Id, room.IsMale, room.AreaSqMeters)
 
 	placesCount := int(room.AreaSqMeters / 4)
@@ -41,4 +41,10 @@ func GetRoomById(id uint, room *db.Room) error {
 		err = fmt.Errorf("Room with id %d not found", id)
 	}
 	return err
+}
+
+func IsRoomNumberExists(number string) bool {
+	var room db.Room
+	db.DB.Where("number = ?", number).First(&room)
+	return room.Id != 0
 }

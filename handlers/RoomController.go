@@ -12,6 +12,7 @@ type AddRoomRequest struct {
 	IsMale       bool
 	AreaSqMeters float32
 	Number 	     string
+	UUID 	     string `json:"uuid"`
 }
 
 func AddRoomHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +30,11 @@ func AddRoomHandler(w http.ResponseWriter, r *http.Request) {
 		Number:       request.Number,
 	}
 
-	service.AddRoom(room)
+	err = service.AddRoom(request.UUID, &room)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 }
 
 // has no request body
