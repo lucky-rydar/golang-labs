@@ -42,3 +42,11 @@ func LoginUser(name string, pass string) (string, error) {
 	}
 	return user.UUID, nil
 }
+
+func IsUserAdmin(uuid string) bool {
+	is_admin, err := repository.IsUserAdmin(uuid)
+	if err != nil {
+		return false
+	}
+	return is_admin
+}

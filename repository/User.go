@@ -39,3 +39,12 @@ func UserExists(name string) bool {
 	db.DB.Where("username = ?", name).Find(&users)
 	return len(users) > 0
 }
+
+func IsUserAdmin(uuid string) (bool, error) {
+	var user db.User
+	err := db.DB.Where("uuid = ?", uuid).First(&user).Error
+	if err != nil {
+		return false, err
+	}
+	return user.IsAdmin, nil
+}

@@ -7,18 +7,50 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
+type AddContractRequest struct {
+	UUID string `json:"uuid"`
+}
+
 func AddContractHandler(w http.ResponseWriter, r *http.Request) {
-	contract := service.AddContract()
-	err := json.NewEncoder(w).Encode(contract)
+	var request AddContractRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	contract, err := service.AddContract(request.UUID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(contract)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 }
 
+type GetContractsRequest struct {
+	UUID string `json:"uuid"`
+}
+
 func GetContractsHandler(w http.ResponseWriter, r *http.Request) {
-	contracts := service.GetContracts()
-	err := json.NewEncoder(w).Encode(contracts)
+	var request GetContractsRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	contracts, err := service.GetContracts(request.UUID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(contracts)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
