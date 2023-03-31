@@ -32,12 +32,14 @@ func RunHttpServer() {
 	mux.HandleFunc("/student_tickets/add", handlers.AddStudentTicketHandler)
 	mux.HandleFunc("/student_tickets/bySerialNumber", handlers.GetStudentTicketBySerialNumberHandler)
 
-	mux.HandleFunc("/student/register", handlers.RegisterStudentHandler)
-	mux.HandleFunc("/student/contract/sign", handlers.SignContractHandler)
-	mux.HandleFunc("/student/settle", handlers.SettleHandler)
-	mux.HandleFunc("/student/unsettle", handlers.UnsettleHandler)
-	mux.HandleFunc("/student/resettle", handlers.ResettleHandler)
-	mux.HandleFunc("/students", handlers.GetStudentsHandler)
+	mux.HandleFunc("/ask_admin/register", handlers.AskAdminRegisterHandler)
+	mux.HandleFunc("/ask_admin/contract/sign", handlers.AskAdminSignContractHandler)
+	mux.HandleFunc("/ask_admin/settle", handlers.AskAdminSettleHandler)
+	mux.HandleFunc("/ask_admin/unsettle", handlers.AskAdminUnsettleHandler)
+	mux.HandleFunc("/ask_admin/resettle", handlers.AskAdminResettleHandler)
+	mux.HandleFunc("/ask_admin/actions", handlers.GetActionsHandler)
+	// only for admin
+	mux.HandleFunc("/ask_admin/actions/resolve", handlers.ResolveActionHandler)
 
 	mux.HandleFunc("/dormitory/load/stats", handlers.GetDormitoryLoadHandler)
 
