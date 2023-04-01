@@ -47,17 +47,17 @@ func GetStudentByTicketId(ticket_id uint) db.Student {
 
 func SetStudentToPlace(student_id uint, place_id uint) error {
 	student := GetStudentById(student_id)
-	student.PlaceId = place_id
-	db.DB.Save(&student)
 
-	// make place occupied
 	place := db.Place{}
 	err := GetPlaceById(place_id, &place)
 	if err != nil {
 		return err
 	}
 
-	place.IsFree = true
+	student.PlaceId = place_id
+	db.DB.Save(&student)
+
+	place.IsFree = false
 	db.DB.Save(&place)
 
 	return nil
@@ -73,7 +73,7 @@ func UnsetStudentFromPlace(student_id uint) error {
 		return err
 	}
 
-	place.IsFree = false
+	place.IsFree = true
 	db.DB.Save(&place)
 	
 	student.PlaceId = 0

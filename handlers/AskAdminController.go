@@ -29,8 +29,6 @@ func AskAdminRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 type AskAdminSignContractRequest struct {
@@ -50,8 +48,6 @@ func AskAdminSignContractHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 type AskAdminUnsettleRequest struct {
@@ -71,8 +67,6 @@ func AskAdminUnsettleHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 type AskAdminSettleRequest struct {
@@ -93,8 +87,6 @@ func AskAdminSettleHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 type AskAdminResettleRequest struct {
@@ -115,8 +107,6 @@ func AskAdminResettleHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 type AskAdminGetActionsRequest struct {
@@ -142,8 +132,6 @@ func GetActionsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 type ResolveActionRequest struct {
@@ -165,6 +153,4 @@ func ResolveActionHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
