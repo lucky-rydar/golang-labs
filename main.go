@@ -32,6 +32,8 @@ func RunHttpServer() {
 	mux.HandleFunc("/student_tickets/add", handlers.AddStudentTicketHandler)
 	mux.HandleFunc("/student_tickets/bySerialNumber", handlers.GetStudentTicketBySerialNumberHandler)
 
+	mux.HandleFunc("/students", handlers.GetStudentsHandler)
+
 	mux.HandleFunc("/ask_admin/register", handlers.AskAdminRegisterHandler)
 	mux.HandleFunc("/ask_admin/contract/sign", handlers.AskAdminSignContractHandler)
 	mux.HandleFunc("/ask_admin/settle", handlers.AskAdminSettleHandler)

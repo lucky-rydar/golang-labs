@@ -77,7 +77,7 @@ func AskAdminUnsettleHandler(w http.ResponseWriter, r *http.Request) {
 
 type AskAdminSettleRequest struct {
 	StudentTicketNumber string
-	RoomId string
+	RoomNumber string
 }
 
 func AskAdminSettleHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func AskAdminSettleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.AskAdminSettle(request.StudentTicketNumber, request.RoomId)
+	err = service.AskAdminSettle(request.StudentTicketNumber, request.RoomNumber)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -99,7 +99,7 @@ func AskAdminSettleHandler(w http.ResponseWriter, r *http.Request) {
 
 type AskAdminResettleRequest struct {
 	StudentTicketNumber string
-	RoomId string
+	RoomNumber string
 }
 
 func AskAdminResettleHandler(w http.ResponseWriter, r *http.Request) {
@@ -110,7 +110,7 @@ func AskAdminResettleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.AskAdminResettle(request.StudentTicketNumber, request.RoomId)
+	err = service.AskAdminResettle(request.StudentTicketNumber, request.RoomNumber)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

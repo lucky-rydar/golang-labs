@@ -27,7 +27,8 @@ func InitDB() *gorm.DB {
 		&Contract{},
 		&StudentTicket{},
 		&Student{},
-		&User{})
+		&User{},
+		&AskAdmin{})
 
 	if err != nil {
 		log.Fatal(err)

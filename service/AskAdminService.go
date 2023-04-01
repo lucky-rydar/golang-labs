@@ -77,6 +77,7 @@ func ResolveAction(uuid string, actionId uint, isApproved bool) error {
 		if err != nil {
 			return err
 		}
+		return nil
 	}
 
 	action, err := repository.GetActionById(actionId)

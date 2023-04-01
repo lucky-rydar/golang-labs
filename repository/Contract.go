@@ -7,8 +7,6 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-
-
 func AddContract() db.Contract {
 	contract := db.Contract{
 		SignDate:   time.Now(),

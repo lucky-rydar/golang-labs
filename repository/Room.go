@@ -48,3 +48,19 @@ func IsRoomNumberExists(number string) bool {
 	db.DB.Where("number = ?", number).First(&room)
 	return room.Id != 0
 }
+
+func RemoveRoomById(id uint) error {
+	var err error
+	var room db.Room
+	err = GetRoomById(id, &room)
+	if err == nil {
+		db.DB.Delete(&room)
+	}
+	return err
+}
+
+func GetRoomByNumber(number string) db.Room {
+	var room db.Room
+	db.DB.Where("number = ?", number).First(&room)
+	return room
+}

@@ -38,3 +38,46 @@ func GetStudentById(id uint) db.Student {
 	db.DB.Where("id = ?", id).First(&student)
 	return student
 }
+
+func GetStudentByTicketId(ticket_id uint) db.Student {
+	var student db.Student
+	db.DB.Where("student_ticket_id = ?", ticket_id).First(&student)
+	return student
+}
+
+func SetStudentToPlace(student_id uint, place_id uint) error {
+	student := GetStudentById(student_id)
+	student.PlaceId = place_id
+	db.DB.Save(&student)
+
+	// make place occupied
+	place := db.Place{}
+	err := GetPlaceById(place_id, &place)
+	if err != nil {
+		return err
+	}
+
+	place.IsFree = true
+	db.DB.Save(&place)
+
+	return nil
+}
+
+func UnsetStudentFromPlace(student_id uint) error {
+	student := GetStudentById(student_id)
+	
+	// make place free
+	place := db.Place{}
+	err := GetPlaceById(student.PlaceId, &place)
+	if err != nil {
+		return err
+	}
+
+	place.IsFree = false
+	db.DB.Save(&place)
+	
+	student.PlaceId = 0
+	db.DB.Save(&student)
+
+	return nil
+}
