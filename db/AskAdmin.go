@@ -5,7 +5,7 @@ import (
 )
 
 type AskAdmin struct {
-	Id uint `gorm:"primaryKey;autoIncrement`
+	Id uint `gorm:"primaryKey;autoIncrement"`
 	Action string
 	Name string
 	Surname string

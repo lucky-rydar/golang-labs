@@ -42,12 +42,18 @@ func SignContract(student_ticket_number string) error {
 		if err != nil {
 			return err
 		}
-		repository.RemoveContractById(contract.Id)
+		err = repository.RemoveContractById(contract.Id)
+		if err != nil {
+			return err
+		}
 	}
 
 	new_contract := repository.AddContract()
 
-	repository.SetContract(student.Id, new_contract.Id)
+	err := repository.SetContract(student.Id, new_contract.Id)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -97,7 +103,10 @@ func Settle(student_ticket_number string, roomNumber string) error {
 	}
 
 	place := places[0]
-	repository.SetStudentToPlace(student.Id, place.Id)
+	err = repository.SetStudentToPlace(student.Id, place.Id)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -124,7 +133,10 @@ func Unsettle(student_ticket_number string) error {
 		return err
 	}
 
-	repository.UnsetStudentFromPlace(student.Id)
+	err = repository.UnsetStudentFromPlace(student.Id)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
