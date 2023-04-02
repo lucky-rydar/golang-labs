@@ -143,10 +143,77 @@ func Resettle(student_ticket_number string, roomNumber string) error {
 	return nil
 }
 
-func GetStudents(uuid string) (error, []db.Student) {
+type StudentRepr struct {
+	Id          uint
+	Name        string
+	Surname     string
+	IsMale	    bool
+	Place       PlaceRepr
+	Contract    db.Contract
+	StudentTicket db.StudentTicket
+}
+
+func GetStudents(uuid string) (error, []StudentRepr) {
 	if !IsUserAdmin(uuid) {
 		return fmt.Errorf("User is not admin"), nil
 	}
 
-	return nil, repository.GetStudents()
+	ret := []StudentRepr{};
+
+	students := repository.GetStudents()
+	for i := 0; i < len(students); i++ {
+		student := students[i]
+
+		student_repr := StudentRepr{
+			Id: student.Id,
+			Name: student.Name,
+			Surname: student.Surname,
+			IsMale: student.IsMale,
+		}
+
+		if student.ContractId != 0 {
+			contract := db.Contract{}
+			err := repository.GetContractById(student.ContractId, &contract)
+			if err != nil {
+				return err, nil
+			}
+			student_repr.Contract = contract
+		}
+
+		if student.StudentTicketId != 0 {
+			student_ticket := repository.GetStudentTicketById(student.StudentTicketId)
+			if student_ticket.Id == 0 {
+				// error should be returned because student can't be registered without a ticket
+				return fmt.Errorf("Ticket not found"), nil
+			}
+			student_repr.StudentTicket = student_ticket
+		}
+
+		if student.PlaceId != 0 {
+			place := db.Place{}
+			err := repository.GetPlaceById(student.PlaceId, &place)
+			if err != nil {
+				return err, nil
+			}
+			
+			room := db.Room{}
+			err = repository.GetRoomById(place.RoomId, &room)
+			if err != nil {
+				return err, nil
+			}
+
+			place_repr := PlaceRepr{
+				PlaceId: place.Id,
+				IsFree: place.IsFree,
+				IsMale: room.IsMale,
+				RoomNumber: room.Number,
+			}
+
+			student_repr.Place = place_repr
+		}
+
+		ret = append(ret, student_repr)
+	}
+
+	return nil, ret
 }

@@ -30,3 +30,9 @@ func GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket {
 	db.DB.First(&ticket, "serial_number = ?", serialNumber)
 	return ticket
 }
+
+func GetStudentTicketById(id uint) db.StudentTicket {
+	var ticket db.StudentTicket
+	db.DB.First(&ticket, "id = ?", id)
+	return ticket
+}
