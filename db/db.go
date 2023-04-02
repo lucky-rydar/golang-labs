@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/it-02/dormitory/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -23,11 +22,13 @@ func InitDB() *gorm.DB {
 	fmt.Println("Database connected")
 
 	err = db.AutoMigrate(
-		&models.Room{},
-		&models.Place{},
-		&models.Contract{},
-		&models.StudentTicket{},
-		&models.Student{})
+		&Room{},
+		&Place{},
+		&Contract{},
+		&StudentTicket{},
+		&Student{},
+		&User{},
+		&AskAdmin{})
 
 	if err != nil {
 		log.Fatal(err)

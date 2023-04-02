@@ -1,4 +1,4 @@
-package models
+package db
 
 type Place struct {
 	Id           uint `gorm:"primaryKey;autoIncrement"`

@@ -1,4 +1,4 @@
-package models
+package db
 
 type Room struct {
 	Id           uint `gorm:"primaryKey;autoIncrement"`

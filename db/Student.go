@@ -1,4 +1,4 @@
-package models
+package db
 
 type Student struct {
 	Id              uint `gorm:"primaryKey;autoIncrement"`
