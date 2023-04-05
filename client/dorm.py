@@ -27,7 +27,7 @@ def parser_init():
 
     # resolve action
     parser.add_argument('--action_id', type=int, help='action id')
-    parser.add_argument('--is_approved', type=bool, help='is approved action', default=True)
+    parser.add_argument('--is_approved', action='store_true', help='is approved action')
 
     # add room
     parser.add_argument('--area_sqm', type=int, help='area sqm')
