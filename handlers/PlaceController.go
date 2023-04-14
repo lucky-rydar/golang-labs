@@ -7,8 +7,25 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
-func GetPlacesHandler(w http.ResponseWriter, r *http.Request) {
-	places := service.GetPlaces()
+type IPlaceController interface {
+	GetPlacesHandler(w http.ResponseWriter, r *http.Request)
+	GetFreePlacesHandler(w http.ResponseWriter, r *http.Request)
+	GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request)
+	GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request)
+}
+
+type PlaceController struct {
+	place_service *service.IPlaceService
+}
+
+func NewPlaceController(place_service *service.IPlaceService) *PlaceController {
+	return &PlaceController{
+		place_service: place_service,
+	}
+}
+
+func (this PlaceController) GetPlacesHandler(w http.ResponseWriter, r *http.Request) {
+	places := this.place_service.GetPlaces()
 	err := json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -16,8 +33,8 @@ func GetPlacesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetFreePlacesHandler(w http.ResponseWriter, r *http.Request) {
-	places := service.GetFreePlaces()
+func (this PlaceController) GetFreePlacesHandler(w http.ResponseWriter, r *http.Request) {
+	places := this.place_service.GetFreePlaces()
 	err := json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -29,7 +46,7 @@ type GetFreePlacesByRoomIdRequest struct {
 	RoomId uint
 }
 
-func GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
+func (this PlaceController) GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetFreePlacesByRoomIdRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -38,7 +55,7 @@ func GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	places := service.GetFreePlacesByRoomId(request.RoomId)
+	places := this.place_service.GetFreePlacesByRoomId(request.RoomId)
 	err = json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -50,7 +67,7 @@ type GetPlacesByRoomIdRequest struct {
 	RoomId uint
 }
 
-func GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
+func (this PlaceController) GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetPlacesByRoomIdRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -59,7 +76,7 @@ func GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	places := service.GetPlacesByRoomId(request.RoomId)
+	places := this.place_service.GetPlacesByRoomId(request.RoomId)
 	err = json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
