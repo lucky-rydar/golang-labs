@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/it-02/dormitory/db"
+	"gorm.io/gorm"
 )
 
 type IStudent interface {
@@ -14,14 +15,16 @@ type IStudent interface {
 	GetStudentByTicketId(ticket_id uint) db.Student
 	SetStudentToPlace(student_id uint, place_id uint) error
 	UnsetStudentFromPlace(student_id uint) error
+	GetStudentsByPlaceIds(place_ids []uint) []db.Student
 }
 
 type Student struct {
 	db *gorm.DB
+	place_repository IPlace
 }
 
-func NewStudent(db *gorm.DB) IStudent {
-	return &Student{db: db}
+func NewStudent(db *gorm.DB, place_repository IPlace) IStudent {
+	return &Student{db: db, place_repository: place_repository}
 }
 
 func (this Student) AddStudent(student *db.Student) error {
@@ -38,7 +41,7 @@ func (this Student) AddStudent(student *db.Student) error {
 }
 
 func (this Student) SetContract(student_id uint, contract_id uint) error {
-	student := GetStudentById(student_id)
+	student := this.GetStudentById(student_id)
 	student.ContractId = contract_id
 	this.db.Save(&student)
 
@@ -64,10 +67,10 @@ func (this Student) GetStudentByTicketId(ticket_id uint) db.Student {
 }
 
 func (this Student) SetStudentToPlace(student_id uint, place_id uint) error {
-	student := GetStudentById(student_id)
+	student := this.GetStudentById(student_id)
 
 	place := db.Place{}
-	err := GetPlaceById(place_id, &place)
+	err := this.place_repository.GetPlaceById(place_id, &place)
 	if err != nil {
 		return err
 	}
@@ -82,11 +85,11 @@ func (this Student) SetStudentToPlace(student_id uint, place_id uint) error {
 }
 
 func (this Student) UnsetStudentFromPlace(student_id uint) error {
-	student := GetStudentById(student_id)
+	student := this.GetStudentById(student_id)
 	
 	// make place free
 	place := db.Place{}
-	err := GetPlaceById(student.PlaceId, &place)
+	err := this.place_repository.GetPlaceById(student.PlaceId, &place)
 	if err != nil {
 		return err
 	}

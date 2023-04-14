@@ -8,45 +8,58 @@ import (
 
 	"github.com/it-02/dormitory/db"
 	"github.com/it-02/dormitory/handlers"
+	//"github.com/it-02/dormitory/repository"
+	"gorm.io/gorm"
 )
 
-func RunHttpServer() {
+func RunHttpServer(db *gorm.DB) {
+	// init repositories
+	// room_repository := repository.NewRoom(db)
+	// place_repository := repository.NewPlace(db)
+	// contract_repository := repository.NewContract(db)
+	// student_ticket_repository := repository.NewStudentTicket(db)
+	// student_repository := repository.NewStudent(db)
+	// user_repository := repository.NewUser(db)
+	// ask_admin_repository := repository.NewAskAdmin(db)
+
+
+	// setup http service
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/ping", handlers.PingHandler)
 
-	mux.HandleFunc("/rooms", handlers.GetRoomsHandler)
-	mux.HandleFunc("/rooms/add", handlers.AddRoomHandler)
-	mux.HandleFunc("/rooms/byPlaceId", handlers.GetRoomByPlaceIdHandler)
-	mux.HandleFunc("/rooms/stats/byNumber", handlers.GetRoomStatsByNumberHandler)
+	// mux.HandleFunc("/rooms", handlers.GetRoomsHandler)
+	// mux.HandleFunc("/rooms/add", handlers.AddRoomHandler)
+	// mux.HandleFunc("/rooms/byPlaceId", handlers.GetRoomByPlaceIdHandler)
+	// mux.HandleFunc("/rooms/stats/byNumber", handlers.GetRoomStatsByNumberHandler)
 	
-	mux.HandleFunc("/places", handlers.GetPlacesHandler)
-	mux.HandleFunc("/places/free", handlers.GetFreePlacesHandler)
-	mux.HandleFunc("/places/free/byRoomId", handlers.GetFreePlacesByRoomIdHandler)
-	mux.HandleFunc("/places/byRoomId", handlers.GetPlacesByRoomIdHandler)
+	// mux.HandleFunc("/places", handlers.GetPlacesHandler)
+	// mux.HandleFunc("/places/free", handlers.GetFreePlacesHandler)
+	// mux.HandleFunc("/places/free/byRoomId", handlers.GetFreePlacesByRoomIdHandler)
+	// mux.HandleFunc("/places/byRoomId", handlers.GetPlacesByRoomIdHandler)
 
-	mux.HandleFunc("/contracts", handlers.GetContractsHandler)
-	mux.HandleFunc("/contracts/add", handlers.AddContractHandler)
+	// mux.HandleFunc("/contracts", handlers.GetContractsHandler)
+	// mux.HandleFunc("/contracts/add", handlers.AddContractHandler)
 
-	mux.HandleFunc("/student_tickets", handlers.GetStudentTicketsHandler)
-	mux.HandleFunc("/student_tickets/add", handlers.AddStudentTicketHandler)
-	mux.HandleFunc("/student_tickets/bySerialNumber", handlers.GetStudentTicketBySerialNumberHandler)
+	// mux.HandleFunc("/student_tickets", handlers.GetStudentTicketsHandler)
+	// mux.HandleFunc("/student_tickets/add", handlers.AddStudentTicketHandler)
+	// mux.HandleFunc("/student_tickets/bySerialNumber", handlers.GetStudentTicketBySerialNumberHandler)
 
-	mux.HandleFunc("/students", handlers.GetStudentsHandler)
+	// mux.HandleFunc("/students", handlers.GetStudentsHandler)
 
-	mux.HandleFunc("/ask_admin/register", handlers.AskAdminRegisterHandler)
-	mux.HandleFunc("/ask_admin/contract/sign", handlers.AskAdminSignContractHandler)
-	mux.HandleFunc("/ask_admin/settle", handlers.AskAdminSettleHandler)
-	mux.HandleFunc("/ask_admin/unsettle", handlers.AskAdminUnsettleHandler)
-	mux.HandleFunc("/ask_admin/resettle", handlers.AskAdminResettleHandler)
-	mux.HandleFunc("/ask_admin/actions", handlers.GetActionsHandler)
-	// only for admin
-	mux.HandleFunc("/ask_admin/actions/resolve", handlers.ResolveActionHandler)
+	// mux.HandleFunc("/ask_admin/register", handlers.AskAdminRegisterHandler)
+	// mux.HandleFunc("/ask_admin/contract/sign", handlers.AskAdminSignContractHandler)
+	// mux.HandleFunc("/ask_admin/settle", handlers.AskAdminSettleHandler)
+	// mux.HandleFunc("/ask_admin/unsettle", handlers.AskAdminUnsettleHandler)
+	// mux.HandleFunc("/ask_admin/resettle", handlers.AskAdminResettleHandler)
+	// mux.HandleFunc("/ask_admin/actions", handlers.GetActionsHandler)
+	// // only for admin
+	// mux.HandleFunc("/ask_admin/actions/resolve", handlers.ResolveActionHandler)
 
-	mux.HandleFunc("/dormitory/load/stats", handlers.GetDormitoryLoadHandler)
+	// mux.HandleFunc("/dormitory/load/stats", handlers.GetDormitoryLoadHandler)
 
-	mux.HandleFunc("/user/register", handlers.RegisterUserHandler)
-	mux.HandleFunc("/user/login", handlers.LoginUserHandler)
+	// mux.HandleFunc("/user/register", handlers.RegisterUserHandler)
+	// mux.HandleFunc("/user/login", handlers.LoginUserHandler)
 
 	srv := &http.Server{
 		Addr:         ":8080",
@@ -63,6 +76,7 @@ func RunHttpServer() {
 }
 
 func main() {
-	db.SetupDB()
-	RunHttpServer()
+	db := db.InitDB()
+	
+	RunHttpServer(db)
 }

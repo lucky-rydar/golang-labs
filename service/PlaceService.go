@@ -13,25 +13,25 @@ type IPlaceService interface {
 }
 
 type PlaceService struct {
-	place_repository *repository.IPlace
+	place_repository repository.IPlace
 }
 
-func NewPlaceService(place_repository *repository.IPlace) IPlaceService {
+func NewPlaceService(place_repository repository.IPlace) IPlaceService {
 	return &PlaceService{place_repository: place_repository}
 }
 
 func (this PlaceService) GetPlaces() []db.Place {
-	return repository.GetPlaces()
+	return this.place_repository.GetPlaces()
 }
 
 func (this PlaceService) GetFreePlaces() []db.Place {
-	return repository.GetFreePlaces()
+	return this.place_repository.GetFreePlaces()
 }
 
 func (this PlaceService) GetFreePlacesByRoomId(roomId uint) []db.Place {
-	return repository.GetFreePlacesByRoomId(roomId)
+	return this.place_repository.GetFreePlacesByRoomId(roomId)
 }
 
 func (this PlaceService) GetPlacesByRoomId(roomId uint) []db.Place {
-	return repository.GetPlacesByRoomId(roomId)
+	return this.place_repository.GetPlacesByRoomId(roomId)
 }

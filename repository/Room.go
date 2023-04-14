@@ -71,7 +71,7 @@ func (this Room) IsRoomNumberExists(number string) bool {
 func (this Room) RemoveRoomById(id uint) error {
 	var err error
 	var room db.Room
-	err = GetRoomById(id, &room)
+	err = this.GetRoomById(id, &room)
 	if err == nil {
 		this.db.Delete(&room)
 	}

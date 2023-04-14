@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type IConstract interface {
+type IContract interface {
 	AddContract() db.Contract
 	GetContracts() []db.Contract
 	GetContractById(id uint, contract *db.Contract) error
@@ -19,7 +19,7 @@ type Contract struct {
 	db *gorm.DB
 }
 
-func NewContract(db *gorm.DB) IConstract {
+func NewContract(db *gorm.DB) IContract {
 	return &Contract{db: db}
 }
 
@@ -35,13 +35,13 @@ func (this Contract) AddContract() db.Contract {
 	return contract
 }
 
-func GetContracts() []db.Contract {
+func (this Contract) GetContracts() []db.Contract {
 	var contracts []db.Contract
 	this.db.Find(&contracts)
 	return contracts
 }
 
-func GetContractById(id uint, contract *db.Contract) error {
+func (this Contract) GetContractById(id uint, contract *db.Contract) error {
 	var err error
 	this.db.First(&contract, id)
 	if contract.Id == 0 {
@@ -50,10 +50,10 @@ func GetContractById(id uint, contract *db.Contract) error {
 	return err
 }
 
-func RemoveContractById(id uint) error {
+func (this Contract) RemoveContractById(id uint) error {
 	var err error
 	var contract db.Contract
-	err = GetContractById(id, &contract)
+	err = this.GetContractById(id, &contract)
 	if err == nil {
 		this.db.Delete(&contract)
 	}

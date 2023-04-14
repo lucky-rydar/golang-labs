@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/it-02/dormitory/db"
+	"gorm.io/gorm"
 )
 
 type IPlace interface {

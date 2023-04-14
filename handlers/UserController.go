@@ -13,10 +13,10 @@ type IUserController interface {
 }
 
 type UserController struct {
-	user_service *service.IUserService
+	user_service service.IUserService
 }
 
-func NewUserController(user_service *service.IUserService) *UserController {
+func NewUserController(user_service service.IUserService) *UserController {
 	return &UserController{
 		user_service: user_service,
 	}
@@ -35,7 +35,7 @@ func (this UserController) RegisterUserHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = service.RegisterUser(request.Username, request.Password)
+	err = this.user_service.RegisterUser(request.Username, request.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -59,7 +59,7 @@ func (this UserController) LoginUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	user_uuid, err := service.LoginUser(request.Username, request.Password)
+	user_uuid, err := this.user_service.LoginUser(request.Username, request.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

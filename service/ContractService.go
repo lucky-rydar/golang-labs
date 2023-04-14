@@ -13,12 +13,12 @@ type IContractService interface {
 }
 
 type ContractService struct {
-	contract_repository *repository.IContract
-	user_service *IUserService
+	contract_repository repository.IContract
+	user_service IUserService
 }
 
-func NewContractService(contract_repository *repository.IContract, user_repository *repository.IUser) IContractService {
-	return &ContractService{contract_repository: contract_repository, user_repository: user_repository}
+func NewContractService(contract_repository repository.IContract, user_service IUserService) IContractService {
+	return &ContractService{contract_repository: contract_repository, user_service: user_service}
 }
 
 func (this ContractService) AddContract(uuid string) (db.Contract, error) {

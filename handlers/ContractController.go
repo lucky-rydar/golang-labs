@@ -13,10 +13,10 @@ type IContractController interface {
 }
 
 type ContractController struct {
-	contract_service *this.contract_service.IContractService
+	contract_service service.IContractService
 }
 
-func NewContractController(contract_service *this.contract_service.IContractService) *ContractController {
+func NewContractController(contract_service service.IContractService) *ContractController {
 	return &ContractController{
 		contract_service: contract_service,
 	}

@@ -12,10 +12,10 @@ type IStudentController interface {
 }
 
 type StudentController struct {
-	student_service *service.IStudentService
+	student_service service.IStudentService
 }
 
-func NewStudentController(student_service *service.IStudentService) *StudentController {
+func NewStudentController(student_service service.IStudentService) *StudentController {
 	return &StudentController{
 		student_service: student_service,
 	}

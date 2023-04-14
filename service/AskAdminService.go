@@ -19,12 +19,13 @@ type IAskAdminService interface {
 }
 
 type AskAdminService struct {
-	ask_admin_repository *repository.IAskAdmin
-	user_service *IUserService
+	ask_admin_repository repository.IAskAdmin
+	user_service IUserService
+	student_service IStudentService
 }
 
-func NewAskAdminService(ask_admin_repository *repository.IAskAdmin, user_repository *repository.IUser) IAskAdminService {
-	return &AskAdminService{ask_admin_repository: ask_admin_repository, user_repository: user_repository}
+func NewAskAdminService(ask_admin_repository repository.IAskAdmin, user_service IUserService, student_service IStudentService) IAskAdminService {
+	return &AskAdminService{ask_admin_repository: ask_admin_repository, user_service: user_service, student_service: student_service}
 }
 
 func (this AskAdminService) AskAdminRegister(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error {
@@ -77,7 +78,7 @@ func (this AskAdminService) GetActions(uuid string) ([]db.AskAdmin, error) {
 		return nil, fmt.Errorf("User is not admin")
 	}
 
-	actions, err := repository.GetActions()
+	actions, err := this.ask_admin_repository.GetActions()
 	if err != nil {
 		return nil, err
 	}
@@ -119,15 +120,15 @@ func (this AskAdminService) ResolveAction(uuid string, actionId uint, isApproved
 			ExpireDate: action.StudentTicketExpireDate,
 		}
 
-		err = this.RegisterStudent(&student, &student_ticket)
+		err = this.student_service.RegisterStudent(&student, &student_ticket)
 	} else if action.Action == "sign_contract" {
-		err = this.SignContract(action.StudentTicketNumber)
+		err = this.student_service.SignContract(action.StudentTicketNumber)
 	} else if action.Action == "unsettle" {
-		err = this.Unsettle(action.StudentTicketNumber)
+		err = this.student_service.Unsettle(action.StudentTicketNumber)
 	} else if action.Action == "settle" {
-		err = this.Settle(action.StudentTicketNumber, action.RoomNumber)
+		err = this.student_service.Settle(action.StudentTicketNumber, action.RoomNumber)
 	} else if action.Action == "resettle" {
-		err = this.Resettle(action.StudentTicketNumber, action.RoomNumber)
+		err = this.student_service.Resettle(action.StudentTicketNumber, action.RoomNumber)
 	} else {
 		err = fmt.Errorf("Unknown action")
 	}

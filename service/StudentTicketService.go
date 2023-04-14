@@ -12,25 +12,25 @@ type IStudentTicketService interface {
 }
 
 type StudentTicketService struct {
-	student_ticket_repository *repository.IStudentTicket
+	student_ticket_repository repository.IStudentTicket
 }
 
-func NewStudentTicketService() *StudentTicketService {
+func NewStudentTicketService(student_ticket_repository repository.IStudentTicket) *StudentTicketService {
 	return &StudentTicketService{
-		student_ticket_repository: repository.NewStudentTicketRepository(),
+		student_ticket_repository: student_ticket_repository,
 	}
 }
 
 func (this StudentTicketService) AddStudentTicket(studentTicket *db.StudentTicket) error {
-	return repository.AddStudentTicket(studentTicket)
+	return this.student_ticket_repository.AddStudentTicket(studentTicket)
 }
 
 func (this StudentTicketService) GetStudentTickets() []db.StudentTicket {
-	return repository.GetStudentTickets()
+	return this.student_ticket_repository.GetStudentTickets()
 }
 
 func (this StudentTicketService) GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket {
-	return repository.GetStudentTicketBySerialNumber(serialNumber)
+	return this.student_ticket_repository.GetStudentTicketBySerialNumber(serialNumber)
 }
 
 

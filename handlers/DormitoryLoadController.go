@@ -12,10 +12,10 @@ type IDormitoryLoadController interface {
 }
 
 type DormitoryLoadController struct {
-	dormitory_load_service *service.IDormitoryLoadService
+	dormitory_load_service service.IDormitoryLoadService
 }
 
-func NewDormitoryLoadController(dormitory_load_service *service.IDormitoryLoadService) *DormitoryLoadController {
+func NewDormitoryLoadController(dormitory_load_service service.IDormitoryLoadService) *DormitoryLoadController {
 	return &DormitoryLoadController{
 		dormitory_load_service: dormitory_load_service,
 	}

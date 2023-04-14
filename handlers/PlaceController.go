@@ -15,10 +15,10 @@ type IPlaceController interface {
 }
 
 type PlaceController struct {
-	place_service *service.IPlaceService
+	place_service service.IPlaceService
 }
 
-func NewPlaceController(place_service *service.IPlaceService) *PlaceController {
+func NewPlaceController(place_service service.IPlaceService) *PlaceController {
 	return &PlaceController{
 		place_service: place_service,
 	}

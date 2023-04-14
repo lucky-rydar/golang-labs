@@ -16,10 +16,10 @@ type IStudentTicketController interface {
 }
 
 type StudentTicketController struct {
-	student_ticket_service *service.IStudentTicketService
+	student_ticket_service service.IStudentTicketService
 }
 
-func NewStudentTicketController(student_ticket_service *service.IStudentTicketService) *StudentTicketController {
+func NewStudentTicketController(student_ticket_service service.IStudentTicketService) *StudentTicketController {
 	return &StudentTicketController{
 		student_ticket_service: student_ticket_service,
 	}

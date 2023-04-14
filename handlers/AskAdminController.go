@@ -19,10 +19,10 @@ type IAskAdminController interface {
 }
 
 type AskAdminController struct {
-	ask_admin_service *this.ask_admin_service.IAskAdminService
+	ask_admin_service service.IAskAdminService
 }
 
-func NewAskAdminController(ask_admin_service *this.ask_admin_service.IAskAdminService) IAskAdminController {
+func NewAskAdminController(ask_admin_service service.IAskAdminService) IAskAdminController {
 	return &AskAdminController{ask_admin_service: ask_admin_service}
 }
 

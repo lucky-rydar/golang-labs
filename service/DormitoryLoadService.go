@@ -12,12 +12,12 @@ type IDormitoryLoadService interface {
 }
 
 type DormitoryLoadService struct {
-	place_repository *repository.IPlace
-	room_repository *repository.IRoom
-	user_service *IUserService
+	place_repository repository.IPlace
+	room_repository repository.IRoom
+	user_service IUserService
 }
 
-func NewDormitoryLoadService(place_repository *repository.IPlace, room_repository *repository.IRoom, user_service *IUserService) IDormitoryLoad {
+func NewDormitoryLoadService(place_repository repository.IPlace, room_repository repository.IRoom, user_service IUserService) IDormitoryLoadService {
 	return &DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
 }
 
@@ -37,7 +37,7 @@ type DormitoryLoad struct {
 }
 
 func (this DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
-	if !IsUserAdmin(uuid) {
+	if !this.user_service.IsUserAdmin(uuid) {
 		return DormitoryLoad{}, fmt.Errorf("User is not admin")
 	}
 

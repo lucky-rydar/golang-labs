@@ -16,10 +16,10 @@ type IRoomController interface {
 }
 
 type RoomController struct {
-	room_service *service.IRoomService
+	room_service service.IRoomService
 }
 
-func NewRoomController(room_service *service.IRoomService) *RoomController {
+func NewRoomController(room_service service.IRoomService) *RoomController {
 	return &RoomController{
 		room_service: room_service,
 	}

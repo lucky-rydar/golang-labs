@@ -15,13 +15,13 @@ type IRoomService interface {
 }
 
 type RoomService struct {
-	room_repository *repository.IRoom
-	place_repository *repository.IPlace
-	student_repository *repository.IStudent
-	user_service *IUserService
+	room_repository repository.IRoom
+	place_repository repository.IPlace
+	student_repository repository.IStudent
+	user_service IUserService
 }
 
-func NewRoomService(room_repository *repository.IRoom, place_repository *repository.IPlace, student_repository *repository.IStudent, user_service *IUserService) IRoomService {
+func NewRoomService(room_repository repository.IRoom, place_repository repository.IPlace, student_repository repository.IStudent, user_service IUserService) IRoomService {
 	return &RoomService{room_repository: room_repository, place_repository: place_repository, student_repository: student_repository, user_service: user_service}
 }
 

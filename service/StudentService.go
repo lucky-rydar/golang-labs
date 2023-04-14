@@ -18,16 +18,20 @@ type IStudentService interface {
 }
 
 type StudentService struct {
-	student_repository *repository.IStudent
-	student_ticket_repository *repository.IStudentTicket
-	room_repository *repository.IRoom
-	place_repository *repository.IPlace
-	contract_repository *repository.IContract
-	user_service *IUserService
+	student_repository repository.IStudent
+	student_ticket_repository repository.IStudentTicket
+	room_repository repository.IRoom
+	place_repository repository.IPlace
+	contract_repository repository.IContract
+	user_service IUserService
+}
+
+func NewStudentService(student_repository repository.IStudent, student_ticket_repository repository.IStudentTicket, room_repository repository.IRoom, place_repository repository.IPlace, contract_repository repository.IContract, user_service IUserService) IStudentService {
+	return &StudentService{student_repository: student_repository, student_ticket_repository: student_ticket_repository, room_repository: room_repository, place_repository: place_repository, contract_repository: contract_repository, user_service: user_service}
 }
 
 func (this StudentService) RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error {
-	ret := this.room_repository.AddStudentTicket(student_ticket)
+	ret := this.student_ticket_repository.AddStudentTicket(student_ticket)
 	if ret != nil {
 		return ret
 	}
@@ -160,12 +164,12 @@ func (this StudentService) Unsettle(student_ticket_number string) error {
 }
 
 func (this StudentService) Resettle(student_ticket_number string, roomNumber string) error {
-	err := Unsettle(student_ticket_number)
+	err := this.Unsettle(student_ticket_number)
 	if err != nil {
 		return err
 	}
 
-	err = Settle(student_ticket_number, roomNumber)
+	err = this.Settle(student_ticket_number, roomNumber)
 	if err != nil {
 		return err
 	}
