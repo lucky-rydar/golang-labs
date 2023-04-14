@@ -8,8 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
 // return db
 func InitDB() *gorm.DB { 
 	var err error
@@ -36,8 +34,4 @@ func InitDB() *gorm.DB {
 
 	println("Database initialized")
 	return db
-}
-
-func SetupDB() {
-	DB = InitDB()
 }
