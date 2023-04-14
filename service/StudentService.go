@@ -8,14 +8,32 @@ import (
 	"github.com/it-02/dormitory/repository"
 )
 
-func RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error {
-	ret := repository.AddStudentTicket(student_ticket)
+type IStudentService interface {
+	RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error
+	SignContract(student_ticket_number string) error
+	Settle(student_ticket_number string, roomNumber string) error
+	Unsettle(student_ticket_number string) error
+	Resettle(student_ticket_number string, roomNumber string) error
+	GetStudents(uuid string) (error, []StudentRepr)
+}
+
+type StudentService struct {
+	student_repository *repository.IStudent
+	student_ticket_repository *repository.IStudentTicket
+	room_repository *repository.IRoom
+	place_repository *repository.IPlace
+	contract_repository *repository.IContract
+	user_service *IUserService
+}
+
+func (this StudentService) RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error {
+	ret := this.room_repository.AddStudentTicket(student_ticket)
 	if ret != nil {
 		return ret
 	}
 
 	student.StudentTicketId = student_ticket.Id
-	ret = repository.AddStudent(student)
+	ret = this.student_repository.AddStudent(student)
 	if ret != nil {
 		return ret
 	}
@@ -23,13 +41,13 @@ func RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) erro
 	return ret
 }
 
-func SignContract(student_ticket_number string) error {
-	ticket := repository.GetStudentTicketBySerialNumber(student_ticket_number)
+func (this StudentService) SignContract(student_ticket_number string) error {
+	ticket := this.student_ticket_repository.GetStudentTicketBySerialNumber(student_ticket_number)
 	if ticket.Id == 0 {
 		return fmt.Errorf("Ticket not found")
 	}
 
-	student := repository.GetStudentByTicketId(ticket.Id)
+	student := this.student_repository.GetStudentByTicketId(ticket.Id)
 	if student.Id == 0 {
 		return fmt.Errorf("Student not found")
 	}
@@ -38,19 +56,19 @@ func SignContract(student_ticket_number string) error {
 		// so remove contract first
 
 		contract := db.Contract{}
-		err := repository.GetContractById(student.ContractId, &contract)
+		err := this.contract_repository.GetContractById(student.ContractId, &contract)
 		if err != nil {
 			return err
 		}
-		err = repository.RemoveContractById(contract.Id)
+		err = this.contract_repository.RemoveContractById(contract.Id)
 		if err != nil {
 			return err
 		}
 	}
 
-	new_contract := repository.AddContract()
+	new_contract := this.contract_repository.AddContract()
 
-	err := repository.SetContract(student.Id, new_contract.Id)
+	err := this.student_repository.SetContract(student.Id, new_contract.Id)
 	if err != nil {
 		return err
 	}
@@ -58,18 +76,18 @@ func SignContract(student_ticket_number string) error {
 	return nil
 }
 
-func Settle(student_ticket_number string, roomNumber string) error {
-	student_ticket := repository.GetStudentTicketBySerialNumber(student_ticket_number)
+func (this StudentService) Settle(student_ticket_number string, roomNumber string) error {
+	student_ticket := this.student_ticket_repository.GetStudentTicketBySerialNumber(student_ticket_number)
 	if student_ticket.Id == 0 {
 		return fmt.Errorf("Ticket not found")
 	}
 	
-	student := repository.GetStudentByTicketId(student_ticket.Id)
+	student := this.student_repository.GetStudentByTicketId(student_ticket.Id)
 	if student.Id == 0 {
 		return fmt.Errorf("Student not found")
 	}
 
-	if !repository.IsRoomNumberExists(roomNumber) {
+	if !this.room_repository.IsRoomNumberExists(roomNumber) {
 		return fmt.Errorf("Room not found")
 	}
 
@@ -79,7 +97,7 @@ func Settle(student_ticket_number string, roomNumber string) error {
 
 	// verify contract
 	contract := db.Contract{}
-	err := repository.GetContractById(student.ContractId, &contract)
+	err := this.contract_repository.GetContractById(student.ContractId, &contract)
 	if err != nil {
 		return err
 	}
@@ -88,7 +106,7 @@ func Settle(student_ticket_number string, roomNumber string) error {
 		return fmt.Errorf("Contract is expired")
 	}
 
-	room := repository.GetRoomByNumber(roomNumber)
+	room := this.room_repository.GetRoomByNumber(roomNumber)
 	if room.Id == 0 {
 		return fmt.Errorf("Room not found")
 	}
@@ -97,13 +115,13 @@ func Settle(student_ticket_number string, roomNumber string) error {
 		return fmt.Errorf("Room is not suitable for this student")
 	}
 
-	places := repository.GetFreePlacesByRoomId(room.Id)
+	places := this.place_repository.GetFreePlacesByRoomId(room.Id)
 	if len(places) == 0 {
 		return fmt.Errorf("No free places in room")
 	}
 
 	place := places[0]
-	err = repository.SetStudentToPlace(student.Id, place.Id)
+	err = this.student_repository.SetStudentToPlace(student.Id, place.Id)
 	if err != nil {
 		return err
 	}
@@ -111,13 +129,13 @@ func Settle(student_ticket_number string, roomNumber string) error {
 	return nil
 }
 
-func Unsettle(student_ticket_number string) error {
-	student_ticket := repository.GetStudentTicketBySerialNumber(student_ticket_number)
+func (this StudentService) Unsettle(student_ticket_number string) error {
+	student_ticket := this.student_ticket_repository.GetStudentTicketBySerialNumber(student_ticket_number)
 	if student_ticket.Id == 0 {
 		return fmt.Errorf("Ticket not found")
 	}
 	
-	student := repository.GetStudentByTicketId(student_ticket.Id)
+	student := this.student_repository.GetStudentByTicketId(student_ticket.Id)
 	if student.Id == 0 {
 		return fmt.Errorf("Student not found")
 	}
@@ -128,12 +146,12 @@ func Unsettle(student_ticket_number string) error {
 
 	place_id := student.PlaceId
 	place := db.Place{}
-	err := repository.GetPlaceById(place_id, &place)
+	err := this.place_repository.GetPlaceById(place_id, &place)
 	if err != nil {
 		return err
 	}
 
-	err = repository.UnsetStudentFromPlace(student.Id)
+	err = this.student_repository.UnsetStudentFromPlace(student.Id)
 	if err != nil {
 		return err
 	}
@@ -141,7 +159,7 @@ func Unsettle(student_ticket_number string) error {
 	return nil
 }
 
-func Resettle(student_ticket_number string, roomNumber string) error {
+func (this StudentService) Resettle(student_ticket_number string, roomNumber string) error {
 	err := Unsettle(student_ticket_number)
 	if err != nil {
 		return err
@@ -165,14 +183,14 @@ type StudentRepr struct {
 	StudentTicket db.StudentTicket
 }
 
-func GetStudents(uuid string) (error, []StudentRepr) {
-	if !IsUserAdmin(uuid) {
+func (this StudentService) GetStudents(uuid string) (error, []StudentRepr) {
+	if !this.user_service.IsUserAdmin(uuid) {
 		return fmt.Errorf("User is not admin"), nil
 	}
 
 	ret := []StudentRepr{};
 
-	students := repository.GetStudents()
+	students := this.student_repository.GetStudents()
 	for i := 0; i < len(students); i++ {
 		student := students[i]
 
@@ -185,7 +203,7 @@ func GetStudents(uuid string) (error, []StudentRepr) {
 
 		if student.ContractId != 0 {
 			contract := db.Contract{}
-			err := repository.GetContractById(student.ContractId, &contract)
+			err := this.contract_repository.GetContractById(student.ContractId, &contract)
 			if err != nil {
 				return err, nil
 			}
@@ -193,7 +211,7 @@ func GetStudents(uuid string) (error, []StudentRepr) {
 		}
 
 		if student.StudentTicketId != 0 {
-			student_ticket := repository.GetStudentTicketById(student.StudentTicketId)
+			student_ticket := this.student_ticket_repository.GetStudentTicketById(student.StudentTicketId)
 			if student_ticket.Id == 0 {
 				// error should be returned because student can't be registered without a ticket
 				return fmt.Errorf("Ticket not found"), nil
@@ -203,13 +221,13 @@ func GetStudents(uuid string) (error, []StudentRepr) {
 
 		if student.PlaceId != 0 {
 			place := db.Place{}
-			err := repository.GetPlaceById(student.PlaceId, &place)
+			err := this.place_repository.GetPlaceById(student.PlaceId, &place)
 			if err != nil {
 				return err, nil
 			}
 			
 			room := db.Room{}
-			err = repository.GetRoomById(place.RoomId, &room)
+			err = this.room_repository.GetRoomById(place.RoomId, &room)
 			if err != nil {
 				return err, nil
 			}

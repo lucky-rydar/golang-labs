@@ -8,8 +8,27 @@ import (
 	"github.com/it-02/dormitory/repository"
 )
 
-func AskAdminRegister(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error {
-	err := repository.AddRegisterAction(name, surname, isMale, studentTicketNumber, studentTicketExpireDate)
+type IAskAdminService interface {
+	AskAdminRegister(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error
+	AskAdminSignContract(studentTicketNumber string) error
+	AskAdminUnsettle(studentTicketNumber string) error
+	AskAdminSettle(studentTicketNumber string, roomNumber string) error
+	AskAdminResettle(studentTicketNumber string, roomNumber string) error
+	GetActions(uuid string) ([]db.AskAdmin, error)
+	ResolveAction(uuid string, actionId uint, isApproved bool) error
+}
+
+type AskAdminService struct {
+	ask_admin_repository *repository.IAskAdmin
+	user_service *IUserService
+}
+
+func NewAskAdminService(ask_admin_repository *repository.IAskAdmin, user_repository *repository.IUser) IAskAdminService {
+	return &AskAdminService{ask_admin_repository: ask_admin_repository, user_repository: user_repository}
+}
+
+func (this AskAdminService) AskAdminRegister(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error {
+	err := this.ask_admin_repository.AddRegisterAction(name, surname, isMale, studentTicketNumber, studentTicketExpireDate)
 	if err != nil {
 		return err
 	}
@@ -17,8 +36,8 @@ func AskAdminRegister(name string, surname string, isMale bool, studentTicketNum
 	return nil
 }
 
-func AskAdminSignContract(studentTicketNumber string) error {
-	err := repository.AddSignContractAction(studentTicketNumber)
+func (this AskAdminService) AskAdminSignContract(studentTicketNumber string) error {
+	err := this.ask_admin_repository.AddSignContractAction(studentTicketNumber)
 	if err != nil {
 		return err
 	}
@@ -26,8 +45,8 @@ func AskAdminSignContract(studentTicketNumber string) error {
 	return nil
 }
 
-func AskAdminUnsettle(studentTicketNumber string) error {
-	err := repository.AddUnsettleAction(studentTicketNumber)
+func (this AskAdminService) AskAdminUnsettle(studentTicketNumber string) error {
+	err := this.ask_admin_repository.AddUnsettleAction(studentTicketNumber)
 	if err != nil {
 		return err
 	}
@@ -35,8 +54,8 @@ func AskAdminUnsettle(studentTicketNumber string) error {
 	return nil
 }
 
-func AskAdminSettle(studentTicketNumber string, roomNumber string) error {
-	err := repository.AddSettleAction(studentTicketNumber, roomNumber)
+func (this AskAdminService) AskAdminSettle(studentTicketNumber string, roomNumber string) error {
+	err := this.ask_admin_repository.AddSettleAction(studentTicketNumber, roomNumber)
 	if err != nil {
 		return err
 	}
@@ -44,8 +63,8 @@ func AskAdminSettle(studentTicketNumber string, roomNumber string) error {
 	return nil
 }
 
-func AskAdminResettle(studentTicketNumber string, roomNumber string) error {
-	err := repository.AddResettleAction(studentTicketNumber, roomNumber)
+func (this AskAdminService) AskAdminResettle(studentTicketNumber string, roomNumber string) error {
+	err := this.ask_admin_repository.AddResettleAction(studentTicketNumber, roomNumber)
 	if err != nil {
 		return err
 	}
@@ -53,8 +72,8 @@ func AskAdminResettle(studentTicketNumber string, roomNumber string) error {
 	return nil
 }
 
-func GetActions(uuid string) ([]db.AskAdmin, error) {
-	if !IsUserAdmin(uuid) {
+func (this AskAdminService) GetActions(uuid string) ([]db.AskAdmin, error) {
+	if !this.user_service.IsUserAdmin(uuid) {
 		return nil, fmt.Errorf("User is not admin")
 	}
 
@@ -66,21 +85,21 @@ func GetActions(uuid string) ([]db.AskAdmin, error) {
 	return actions, nil
 }
 
-func ResolveAction(uuid string, actionId uint, isApproved bool) error {
-	if !IsUserAdmin(uuid) {
+func (this AskAdminService) ResolveAction(uuid string, actionId uint, isApproved bool) error {
+	if !this.user_service.IsUserAdmin(uuid) {
 		return fmt.Errorf("User is not admin")
 	}
 
 	if !isApproved {
 		// just delete, no resolution is needed
-		err := repository.DeleteActionById(actionId)
+		err := this.ask_admin_repository.DeleteActionById(actionId)
 		if err != nil {
 			return err
 		}
 		return nil
 	}
 
-	action, err := repository.GetActionById(actionId)
+	action, err := this.ask_admin_repository.GetActionById(actionId)
 	if err != nil {
 		return err
 	}
@@ -100,21 +119,21 @@ func ResolveAction(uuid string, actionId uint, isApproved bool) error {
 			ExpireDate: action.StudentTicketExpireDate,
 		}
 
-		err = RegisterStudent(&student, &student_ticket)
+		err = this.RegisterStudent(&student, &student_ticket)
 	} else if action.Action == "sign_contract" {
-		err = SignContract(action.StudentTicketNumber)
+		err = this.SignContract(action.StudentTicketNumber)
 	} else if action.Action == "unsettle" {
-		err = Unsettle(action.StudentTicketNumber)
+		err = this.Unsettle(action.StudentTicketNumber)
 	} else if action.Action == "settle" {
-		err = Settle(action.StudentTicketNumber, action.RoomNumber)
+		err = this.Settle(action.StudentTicketNumber, action.RoomNumber)
 	} else if action.Action == "resettle" {
-		err = Resettle(action.StudentTicketNumber, action.RoomNumber)
+		err = this.Resettle(action.StudentTicketNumber, action.RoomNumber)
 	} else {
 		err = fmt.Errorf("Unknown action")
 	}
 
 	// remove action 
-	remove_err := repository.DeleteActionById(actionId)
+	remove_err := this.ask_admin_repository.DeleteActionById(actionId)
 	if remove_err != nil {
 		return remove_err
 	}

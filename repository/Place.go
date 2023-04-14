@@ -10,6 +10,7 @@ type IPlace interface {
 	GetPlaces() []db.Place
 	GetFreePlaces() []db.Place
 	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
 	GetPlacesByRoomId(roomId uint) []db.Place
 	GetPlaceById(id uint, place *db.Place) error
 	GetPlacesByParams(isMale bool, isFree bool) []db.Place
@@ -38,6 +39,12 @@ func (this Place) GetFreePlaces() []db.Place {
 func (this Place) GetFreePlacesByRoomId(roomId uint) []db.Place {
 	var places []db.Place
 	this.db.Where("is_free = ? AND room_id = ?", true, roomId).Find(&places)
+	return places
+}
+
+func (this Place) GetOccupiedPlacesByRoomId(roomId uint) []db.Place {
+	var places []db.Place
+	this.db.Where("is_free = ? AND room_id = ?", false, roomId).Find(&places)
 	return places
 }
 

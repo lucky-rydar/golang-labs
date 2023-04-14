@@ -99,3 +99,9 @@ func (this Student) UnsetStudentFromPlace(student_id uint) error {
 
 	return nil
 }
+
+func (this Student) GetStudentsByPlaceIds(place_ids []uint) []db.Student {
+	var students []db.Student
+	this.db.Where("place_id IN (?)", place_ids).Find(&students)
+	return students
+}

@@ -7,25 +7,43 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-func AddRoom(uuid string, room *db.Room) error {
-	if !IsUserAdmin(uuid) {
+type IRoomService interface {
+	AddRoom(uuid string, room *db.Room) error
+	GetRooms() []db.Room
+	GetRoomByPlaceId(placeId uint) db.Room
+	GetRoomStatsByNumber(number string, room_stats *RoomStats) error
+}
+
+type RoomService struct {
+	room_repository *repository.IRoom
+	place_repository *repository.IPlace
+	student_repository *repository.IStudent
+	user_service *IUserService
+}
+
+func NewRoomService(room_repository *repository.IRoom, place_repository *repository.IPlace, student_repository *repository.IStudent, user_service *IUserService) IRoomService {
+	return &RoomService{room_repository: room_repository, place_repository: place_repository, student_repository: student_repository, user_service: user_service}
+}
+
+func (this RoomService) AddRoom(uuid string, room *db.Room) error {
+	if !this.user_service.IsUserAdmin(uuid) {
 		return fmt.Errorf("User is not admin")
 	}
 
-	if !repository.IsRoomNumberExists(room.Number) {
-		repository.AddRoom(room)
+	if !this.room_repository.IsRoomNumberExists(room.Number) {
+		this.room_repository.AddRoom(room)
 	} else {
 		return fmt.Errorf("Room with number %s already exists", room.Number)
 	}
 	return nil
 }
 
-func GetRooms() []db.Room {
-	return repository.GetRooms()
+func (this RoomService) GetRooms() []db.Room {
+	return this.room_repository.GetRooms()
 }
 
-func GetRoomByPlaceId(placeId uint) db.Room {
-	return repository.GetRoomByPlaceId(placeId)
+func (this RoomService) GetRoomByPlaceId(placeId uint) db.Room {
+	return this.room_repository.GetRoomByPlaceId(placeId)
 }
 
 type RoomStats struct {
@@ -37,22 +55,20 @@ type RoomStats struct {
 	StudentsLiving []db.Student
 }
 
-func GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
-	var room db.Room
-	db.DB.Where("number = ?", number).First(&room)
+func (this RoomService) GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
+	room := this.room_repository.GetRoomByNumber(number)
 	if room.Id == 0 {
 		return fmt.Errorf("Room with number %s not found", number)
 	}
+
 	room_stats.Number = room.Number
 	room_stats.IsMale = room.IsMale
 	room_stats.AreaSqMeters = room.AreaSqMeters
 
-	var occupiedPlaces []db.Place
-	db.DB.Where("room_id = ? AND is_free = ?", room.Id, false).Find(&occupiedPlaces)
+	occupiedPlaces := this.place_repository.GetOccupiedPlacesByRoomId(room.Id)
 	room_stats.OccupiedPlaces = occupiedPlaces
 
-	var freePlaces []db.Place
-	db.DB.Where("room_id = ? AND is_free = ?", room.Id, true).Find(&freePlaces)
+	freePlaces := this.place_repository.GetFreePlacesByRoomId(room.Id)
 	room_stats.FreePlaces = freePlaces
 
 	var occupiedPlaceIds []uint
@@ -60,8 +76,7 @@ func GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
 		occupiedPlaceIds = append(occupiedPlaceIds, place.Id)
 	}
 
-	var studentsLiving []db.Student
-	db.DB.Where("place_id IN (?)", occupiedPlaceIds).Find(&studentsLiving)
+	studentsLiving := this.student_repository.GetStudentsByPlaceIds(occupiedPlaceIds)
 	room_stats.StudentsLiving = studentsLiving
 
 	return nil
