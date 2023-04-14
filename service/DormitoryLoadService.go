@@ -7,6 +7,20 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
+type IDormitoryLoadService interface {
+	GetDormitoryLoad(uuid string) (DormitoryLoad, error)
+}
+
+type DormitoryLoadService struct {
+	place_repository repository.IPlace
+	room_repository repository.IRoom
+	user_service IUserService
+}
+
+func NewDormitoryLoadService(place_repository repository.IPlace, room_repository repository.IRoom, user_service IUserService) IDormitoryLoadService {
+	return &DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
+}
+
 type PlaceRepr struct {
 	PlaceId uint
 	IsMale bool
@@ -22,18 +36,18 @@ type DormitoryLoad struct {
 	OccupiedFemalePlaces []PlaceRepr
 }
 
-func GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
-	if !IsUserAdmin(uuid) {
+func (this DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
+	if !this.user_service.IsUserAdmin(uuid) {
 		return DormitoryLoad{}, fmt.Errorf("User is not admin")
 	}
 
 	var dormitoryLoad DormitoryLoad
-	dormitoryLoad.TotalPlacesAmount = len(repository.GetPlaces())
-	freeMalePlaces := repository.GetPlacesByParams(true, true)
+	dormitoryLoad.TotalPlacesAmount = len(this.place_repository.GetPlaces())
+	freeMalePlaces := this.place_repository.GetPlacesByParams(true, true)
 	for i := 0; i < len(freeMalePlaces); i++ {
 		place := freeMalePlaces[i]
 		room := db.Room{}
-		err := repository.GetRoomById(place.RoomId, &room)
+		err := this.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
 			return DormitoryLoad{}, err
 		}
@@ -47,11 +61,11 @@ func GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
 		dormitoryLoad.FreeMalePlaces = append(dormitoryLoad.FreeMalePlaces, place_repr)
 	}
 
-	freeFemalePlaces := repository.GetPlacesByParams(false, true)
+	freeFemalePlaces := this.place_repository.GetPlacesByParams(false, true)
 	for i := 0; i < len(freeFemalePlaces); i++ {
 		place := freeFemalePlaces[i]
 		room := db.Room{}
-		err := repository.GetRoomById(place.RoomId, &room)
+		err := this.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
 			return DormitoryLoad{}, err
 		}
@@ -65,11 +79,11 @@ func GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
 		dormitoryLoad.FreeFemalePlaces = append(dormitoryLoad.FreeFemalePlaces, place_repr)
 	}
 
-	occupiedMalePlaces := repository.GetPlacesByParams(true, false)
+	occupiedMalePlaces := this.place_repository.GetPlacesByParams(true, false)
 	for i := 0; i < len(occupiedMalePlaces); i++ {
 		place := occupiedMalePlaces[i]
 		room := db.Room{}
-		err := repository.GetRoomById(place.RoomId, &room)
+		err := this.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
 			return DormitoryLoad{}, err
 		}
@@ -83,11 +97,11 @@ func GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
 		dormitoryLoad.OccupiedMalePlaces = append(dormitoryLoad.OccupiedMalePlaces, place_repr)
 	}
 
-	occupiedFemalePlaces := repository.GetPlacesByParams(false, false)
+	occupiedFemalePlaces := this.place_repository.GetPlacesByParams(false, false)
 	for i := 0; i < len(occupiedFemalePlaces); i++ {
 		place := occupiedFemalePlaces[i]
 		room := db.Room{}
-		err := repository.GetRoomById(place.RoomId, &room)
+		err := this.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
 			return DormitoryLoad{}, err
 		}

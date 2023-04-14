@@ -4,9 +4,29 @@ import (
 	"time"
 
 	"github.com/it-02/dormitory/db"
+	"gorm.io/gorm"
 )
 
-func AddRegisterAction(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error {
+type IAskAdmin interface {
+	AddRegisterAction(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error
+	AddSignContractAction(studentTicketNumber string) error
+	AddUnsettleAction(studentTicketNumber string) error
+	AddSettleAction(studentTicketNumber string, roomNumber string) error
+	AddResettleAction(studentTicketNumber string, roomNumber string) error
+	GetActions() ([]db.AskAdmin, error)
+	GetActionById(id uint) (db.AskAdmin, error)
+	DeleteActionById(id uint) error
+}
+
+type AskAdmin struct {
+	db *gorm.DB
+}
+
+func NewAskAdmin(db *gorm.DB) IAskAdmin {
+	return &AskAdmin{db: db}
+}
+
+func (this AskAdmin) AddRegisterAction(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error {
 	var action db.AskAdmin
 	action.Action = "register"
 	action.Name = name
@@ -15,7 +35,7 @@ func AddRegisterAction(name string, surname string, isMale bool, studentTicketNu
 	action.StudentTicketNumber = studentTicketNumber
 	action.StudentTicketExpireDate = studentTicketExpireDate
 
-	result := db.DB.Create(&action)
+	result := this.db.Create(&action)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -23,12 +43,12 @@ func AddRegisterAction(name string, surname string, isMale bool, studentTicketNu
 	return nil
 }
 
-func AddSignContractAction(studentTicketNumber string) error {
+func (this AskAdmin) AddSignContractAction(studentTicketNumber string) error {
 	var action db.AskAdmin
 	action.Action = "sign_contract"
 	action.StudentTicketNumber = studentTicketNumber
 
-	result := db.DB.Create(&action)
+	result := this.db.Create(&action)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -36,12 +56,12 @@ func AddSignContractAction(studentTicketNumber string) error {
 	return nil
 }
 
-func AddUnsettleAction(studentTicketNumber string) error {
+func (this AskAdmin) AddUnsettleAction(studentTicketNumber string) error {
 	var action db.AskAdmin
 	action.Action = "unsettle"
 	action.StudentTicketNumber = studentTicketNumber
 
-	result := db.DB.Create(&action)
+	result := this.db.Create(&action)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -49,13 +69,13 @@ func AddUnsettleAction(studentTicketNumber string) error {
 	return nil
 }
 
-func AddSettleAction(studentTicketNumber string, roomNumber string) error {
+func (this AskAdmin) AddSettleAction(studentTicketNumber string, roomNumber string) error {
 	var action db.AskAdmin
 	action.Action = "settle"
 	action.StudentTicketNumber = studentTicketNumber
 	action.RoomNumber = roomNumber
 
-	result := db.DB.Create(&action)
+	result := this.db.Create(&action)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -63,13 +83,13 @@ func AddSettleAction(studentTicketNumber string, roomNumber string) error {
 	return nil
 }
 
-func AddResettleAction(studentTicketNumber string, roomNumber string) error {
+func (this AskAdmin) AddResettleAction(studentTicketNumber string, roomNumber string) error {
 	var action db.AskAdmin
 	action.Action = "resettle"
 	action.StudentTicketNumber = studentTicketNumber
 	action.RoomNumber = roomNumber
 
-	result := db.DB.Create(&action)
+	result := this.db.Create(&action)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -77,9 +97,9 @@ func AddResettleAction(studentTicketNumber string, roomNumber string) error {
 	return nil
 }
 
-func GetActions() ([]db.AskAdmin, error) {
+func (this AskAdmin) GetActions() ([]db.AskAdmin, error) {
 	var actions []db.AskAdmin
-	result := db.DB.Find(&actions)
+	result := this.db.Find(&actions)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -87,9 +107,9 @@ func GetActions() ([]db.AskAdmin, error) {
 	return actions, nil
 }
 
-func GetActionById(id uint) (db.AskAdmin, error) {
+func (this AskAdmin) GetActionById(id uint) (db.AskAdmin, error) {
 	var action db.AskAdmin
-	result := db.DB.First(&action, id)
+	result := this.db.First(&action, id)
 	if result.Error != nil {
 		return db.AskAdmin{}, result.Error
 	}
@@ -97,8 +117,8 @@ func GetActionById(id uint) (db.AskAdmin, error) {
 	return action, nil
 }
 
-func DeleteActionById(id uint) error {
-	result := db.DB.Delete(&db.AskAdmin{}, id)
+func (this AskAdmin) DeleteActionById(id uint) error {
+	result := this.db.Delete(&db.AskAdmin{}, id)
 	if result.Error != nil {
 		return result.Error
 	}

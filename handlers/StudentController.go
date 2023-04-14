@@ -7,11 +7,25 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
+type IStudentController interface {
+	GetStudentsHandler(w http.ResponseWriter, r *http.Request)
+}
+
+type StudentController struct {
+	student_service service.IStudentService
+}
+
+func NewStudentController(student_service service.IStudentService) *StudentController {
+	return &StudentController{
+		student_service: student_service,
+	}
+}
+
 type GetStudentsRequest struct {
 	UUID string
 }
 
-func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
+func (this StudentController) GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetStudentsRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -19,7 +33,7 @@ func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err, students := service.GetStudents(request.UUID)
+	err, students := this.student_service.GetStudents(request.UUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -7,22 +7,36 @@ import (
 	"github.com/it-02/dormitory/repository"
 )
 
-func RegisterUser(name string, pass string) error {
-	users_amount, err := repository.GetUsersAmount()
+type IUserService interface {
+	RegisterUser(name string, pass string) error
+	LoginUser(name string, pass string) (string, error)
+	IsUserAdmin(uuid string) bool
+}
+
+type UserService struct {
+	user_repository repository.IUser
+}
+
+func NewUserService(user_repository repository.IUser) IUserService {
+	return &UserService{user_repository: user_repository}
+}
+
+func (this UserService) RegisterUser(name string, pass string) error {
+	users_amount, err := this.user_repository.GetUsersAmount()
 	if err != nil {
 		return err
 	}
 	if users_amount == 0 {
 		// first user is admin
-		_, err := repository.AddUser(name, pass, true)
+		_, err := this.user_repository.AddUser(name, pass, true)
 		if err != nil {
 			return err
 		}
 	} else {
-		if repository.UserExists(name) {
+		if this.user_repository.UserExists(name) {
 			return fmt.Errorf("user %s already exists", name)
 		} else {
-			_, err := repository.AddUser(name, pass, false)
+			_, err := this.user_repository.AddUser(name, pass, false)
 			if err != nil {
 				return err
 			}
@@ -31,9 +45,9 @@ func RegisterUser(name string, pass string) error {
 	return nil
 }
 
-func LoginUser(name string, pass string) (string, error) {
+func (this UserService) LoginUser(name string, pass string) (string, error) {
 	user := db.User{}
-	err := repository.GetUserByUsername(name, &user)
+	err := this.user_repository.GetUserByUsername(name, &user)
 	if err != nil {
 		return "", err
 	}
@@ -43,8 +57,8 @@ func LoginUser(name string, pass string) (string, error) {
 	return user.UUID, nil
 }
 
-func IsUserAdmin(uuid string) bool {
-	is_admin, err := repository.IsUserAdmin(uuid)
+func (this UserService) IsUserAdmin(uuid string) bool {
+	is_admin, err := this.user_repository.IsUserAdmin(uuid)
 	if err != nil {
 		return false
 	}

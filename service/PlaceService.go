@@ -5,18 +5,33 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-func GetPlaces() []db.Place {
-	return repository.GetPlaces()
+type IPlaceService interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
 }
 
-func GetFreePlaces() []db.Place {
-	return repository.GetFreePlaces()
+type PlaceService struct {
+	place_repository repository.IPlace
 }
 
-func GetFreePlacesByRoomId(roomId uint) []db.Place {
-	return repository.GetFreePlacesByRoomId(roomId)
+func NewPlaceService(place_repository repository.IPlace) IPlaceService {
+	return &PlaceService{place_repository: place_repository}
 }
 
-func GetPlacesByRoomId(roomId uint) []db.Place {
-	return repository.GetPlacesByRoomId(roomId)
+func (this PlaceService) GetPlaces() []db.Place {
+	return this.place_repository.GetPlaces()
+}
+
+func (this PlaceService) GetFreePlaces() []db.Place {
+	return this.place_repository.GetFreePlaces()
+}
+
+func (this PlaceService) GetFreePlacesByRoomId(roomId uint) []db.Place {
+	return this.place_repository.GetFreePlacesByRoomId(roomId)
+}
+
+func (this PlaceService) GetPlacesByRoomId(roomId uint) []db.Place {
+	return this.place_repository.GetPlacesByRoomId(roomId)
 }
