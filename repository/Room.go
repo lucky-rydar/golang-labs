@@ -4,10 +4,29 @@ import (
 	"fmt"
 
 	"github.com/it-02/dormitory/db"
+	"gorm.io/gorm"
 )
 
-func AddRoom(room *db.Room) {
-	db.DB.Create(room)
+type IRoom interface {
+	AddRoom(room *db.Room)
+	GetRooms() []db.Room
+	GetRoomByPlaceId(placeId uint) db.Room
+	GetRoomById(id uint, room *db.Room) error
+	IsRoomNumberExists(roomNumber string) bool
+	RemoveRoomById(id uint) error
+	GetRoomByNumber(number string) db.Room
+}
+
+type Room struct {
+	db *gorm.DB
+}
+
+func NewRoom(db *gorm.DB) IRoom {
+	return &Room{db: db}
+}
+
+func (this Room) AddRoom(room *db.Room) {
+	this.db.Create(room)
 	fmt.Printf("Room {%d, %t, %f} inserted\n", room.Id, room.IsMale, room.AreaSqMeters)
 
 	placesCount := int(room.AreaSqMeters / 4)
@@ -16,51 +35,51 @@ func AddRoom(room *db.Room) {
 			RoomId: room.Id,
 			IsFree: true,
 		}
-		db.DB.Create(&place)
+		this.db.Create(&place)
 	}
 }
 
-func GetRooms() []db.Room {
+func (this Room) GetRooms() []db.Room {
 	var rooms []db.Room
-	db.DB.Find(&rooms)
+	this.db.Find(&rooms)
 	return rooms
 }
 
-func GetRoomByPlaceId(placeId uint) db.Room {
+func (this Room) GetRoomByPlaceId(placeId uint) db.Room {
 	var place db.Place
-	db.DB.First(&place, placeId)
+	this.db.First(&place, placeId)
 	var room db.Room
-	db.DB.First(&room, place.RoomId)
+	this.db.First(&room, place.RoomId)
 	return room
 }
 
-func GetRoomById(id uint, room *db.Room) error {
+func (this Room) GetRoomById(id uint, room *db.Room) error {
 	var err error
-	db.DB.First(&room, id)
+	this.db.First(&room, id)
 	if room.Id == 0 {
 		err = fmt.Errorf("Room with id %d not found", id)
 	}
 	return err
 }
 
-func IsRoomNumberExists(number string) bool {
+func (this Room) IsRoomNumberExists(number string) bool {
 	var room db.Room
-	db.DB.Where("number = ?", number).First(&room)
+	this.db.Where("number = ?", number).First(&room)
 	return room.Id != 0
 }
 
-func RemoveRoomById(id uint) error {
+func (this Room) RemoveRoomById(id uint) error {
 	var err error
 	var room db.Room
 	err = GetRoomById(id, &room)
 	if err == nil {
-		db.DB.Delete(&room)
+		this.db.Delete(&room)
 	}
 	return err
 }
 
-func GetRoomByNumber(number string) db.Room {
+func (this Room) GetRoomByNumber(number string) db.Room {
 	var room db.Room
-	db.DB.Where("number = ?", number).First(&room)
+	this.db.Where("number = ?", number).First(&room)
 	return room
 }
