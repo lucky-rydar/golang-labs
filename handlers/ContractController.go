@@ -7,11 +7,6 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
-type IContractController interface {
-	AddContractHandler(w http.ResponseWriter, r *http.Request)
-	GetContractsHandler(w http.ResponseWriter, r *http.Request)
-}
-
 type ContractController struct {
 	contract_service service.IContractService
 }
@@ -26,7 +21,7 @@ type AddContractRequest struct {
 	UUID string `json:"uuid"`
 }
 
-func (this ContractController) AddContractHandler(w http.ResponseWriter, r *http.Request) {
+func (cc *ContractController) AddContractHandler(w http.ResponseWriter, r *http.Request) {
 	var request AddContractRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -34,7 +29,7 @@ func (this ContractController) AddContractHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	contract, err := this.contract_service.AddContract(request.UUID)
+	contract, err := cc.contract_service.AddContract(request.UUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -51,7 +46,7 @@ type GetContractsRequest struct {
 	UUID string `json:"uuid"`
 }
 
-func (this ContractController) GetContractsHandler(w http.ResponseWriter, r *http.Request) {
+func (cc *ContractController) GetContractsHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetContractsRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -59,7 +54,7 @@ func (this ContractController) GetContractsHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	contracts, err := this.contract_service.GetContracts(request.UUID)
+	contracts, err := cc.contract_service.GetContracts(request.UUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

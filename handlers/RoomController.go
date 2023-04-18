@@ -8,13 +8,6 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-type IRoomController interface {
-	AddRoomHandler(w http.ResponseWriter, r *http.Request)
-	GetRoomsHandler(w http.ResponseWriter, r *http.Request)
-	GetRoomByPlaceIdHandler(w http.ResponseWriter, r *http.Request)
-	GetRoomStatsByNumberHandler(w http.ResponseWriter, r *http.Request)
-}
-
 type RoomController struct {
 	room_service service.IRoomService
 }
@@ -32,7 +25,7 @@ type AddRoomRequest struct {
 	UUID 	     string `json:"uuid"`
 }
 
-func (this RoomController) AddRoomHandler(w http.ResponseWriter, r *http.Request) {
+func (rc *RoomController) AddRoomHandler(w http.ResponseWriter, r *http.Request) {
 	var request AddRoomRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -47,7 +40,7 @@ func (this RoomController) AddRoomHandler(w http.ResponseWriter, r *http.Request
 		Number:       request.Number,
 	}
 
-	err = this.room_service.AddRoom(request.UUID, &room)
+	err = rc.room_service.AddRoom(request.UUID, &room)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -55,8 +48,8 @@ func (this RoomController) AddRoomHandler(w http.ResponseWriter, r *http.Request
 }
 
 // has no request body
-func (this RoomController) GetRoomsHandler(w http.ResponseWriter, r *http.Request) {
-	rooms := this.room_service.GetRooms()
+func (rc *RoomController) GetRoomsHandler(w http.ResponseWriter, r *http.Request) {
+	rooms := rc.room_service.GetRooms()
 	err := json.NewEncoder(w).Encode(rooms)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -68,7 +61,7 @@ type GetRoomByPlaceId struct {
 	PlaceId uint
 }
 
-func (this RoomController) GetRoomByPlaceIdHandler(w http.ResponseWriter, r *http.Request) {
+func (rc *RoomController) GetRoomByPlaceIdHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetRoomByPlaceId
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -77,7 +70,7 @@ func (this RoomController) GetRoomByPlaceIdHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	room := this.room_service.GetRoomByPlaceId(request.PlaceId)
+	room := rc.room_service.GetRoomByPlaceId(request.PlaceId)
 	err = json.NewEncoder(w).Encode(room)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -89,7 +82,7 @@ type GetRoomStatsByNumberRequest struct {
 	Number string
 }
 
-func (this RoomController) GetRoomStatsByNumberHandler(w http.ResponseWriter, r *http.Request) {
+func (rc *RoomController) GetRoomStatsByNumberHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetRoomStatsByNumberRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -99,7 +92,7 @@ func (this RoomController) GetRoomStatsByNumberHandler(w http.ResponseWriter, r 
 	}
 
 	var roomStats service.RoomStats
-	err = this.room_service.GetRoomStatsByNumber(request.Number, &roomStats)
+	err = rc.room_service.GetRoomStatsByNumber(request.Number, &roomStats)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
