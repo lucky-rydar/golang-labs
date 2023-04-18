@@ -4,28 +4,28 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/db"
 )
 
-type IPlaceController interface {
-	GetPlacesHandler(w http.ResponseWriter, r *http.Request)
-	GetFreePlacesHandler(w http.ResponseWriter, r *http.Request)
-	GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request)
-	GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request)
+type IPlaceService interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
 }
 
 type PlaceController struct {
-	place_service service.IPlaceService
+	place_service IPlaceService
 }
 
-func NewPlaceController(place_service service.IPlaceService) *PlaceController {
+func NewPlaceController(place_service IPlaceService) *PlaceController {
 	return &PlaceController{
 		place_service: place_service,
 	}
 }
 
-func (this PlaceController) GetPlacesHandler(w http.ResponseWriter, r *http.Request) {
-	places := this.place_service.GetPlaces()
+func (pc *PlaceController) GetPlacesHandler(w http.ResponseWriter, r *http.Request) {
+	places := pc.place_service.GetPlaces()
 	err := json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -33,8 +33,8 @@ func (this PlaceController) GetPlacesHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func (this PlaceController) GetFreePlacesHandler(w http.ResponseWriter, r *http.Request) {
-	places := this.place_service.GetFreePlaces()
+func (pc *PlaceController) GetFreePlacesHandler(w http.ResponseWriter, r *http.Request) {
+	places := pc.place_service.GetFreePlaces()
 	err := json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -46,7 +46,7 @@ type GetFreePlacesByRoomIdRequest struct {
 	RoomId uint
 }
 
-func (this PlaceController) GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
+func (pc *PlaceController) GetFreePlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetFreePlacesByRoomIdRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -55,7 +55,7 @@ func (this PlaceController) GetFreePlacesByRoomIdHandler(w http.ResponseWriter, 
 		return
 	}
 
-	places := this.place_service.GetFreePlacesByRoomId(request.RoomId)
+	places := pc.place_service.GetFreePlacesByRoomId(request.RoomId)
 	err = json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -67,7 +67,7 @@ type GetPlacesByRoomIdRequest struct {
 	RoomId uint
 }
 
-func (this PlaceController) GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
+func (pc *PlaceController) GetPlacesByRoomIdHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetPlacesByRoomIdRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 
@@ -76,7 +76,7 @@ func (this PlaceController) GetPlacesByRoomIdHandler(w http.ResponseWriter, r *h
 		return
 	}
 
-	places := this.place_service.GetPlacesByRoomId(request.RoomId)
+	places := pc.place_service.GetPlacesByRoomId(request.RoomId)
 	err = json.NewEncoder(w).Encode(places)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

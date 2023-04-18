@@ -21,57 +21,57 @@ type Place struct {
 	db *gorm.DB
 }
 
-func NewPlace(db *gorm.DB) IPlace {
+func NewPlace(db *gorm.DB) *Place {
 	return &Place{db: db}
 }
 
-func (this Place) GetPlaces() []db.Place {
+func (p *Place) GetPlaces() []db.Place {
 	var places []db.Place
-	this.db.Find(&places)
+	p.db.Find(&places)
 	return places
 }
 
-func (this Place) GetFreePlaces() []db.Place {
+func (p *Place) GetFreePlaces() []db.Place {
 	var places []db.Place
-	this.db.Where("is_free = ?", true).Find(&places)
+	p.db.Where("is_free = ?", true).Find(&places)
 	return places
 }
 
-func (this Place) GetFreePlacesByRoomId(roomId uint) []db.Place {
+func (p *Place) GetFreePlacesByRoomId(roomId uint) []db.Place {
 	var places []db.Place
-	this.db.Where("is_free = ? AND room_id = ?", true, roomId).Find(&places)
+	p.db.Where("is_free = ? AND room_id = ?", true, roomId).Find(&places)
 	return places
 }
 
-func (this Place) GetOccupiedPlacesByRoomId(roomId uint) []db.Place {
+func (p *Place) GetOccupiedPlacesByRoomId(roomId uint) []db.Place {
 	var places []db.Place
-	this.db.Where("is_free = ? AND room_id = ?", false, roomId).Find(&places)
+	p.db.Where("is_free = ? AND room_id = ?", false, roomId).Find(&places)
 	return places
 }
 
-func (this Place) GetPlacesByRoomId(roomId uint) []db.Place {
+func (p *Place) GetPlacesByRoomId(roomId uint) []db.Place {
 	var places []db.Place
-	this.db.Where("room_id = ?", roomId).Find(&places)
+	p.db.Where("room_id = ?", roomId).Find(&places)
 	return places
 }
 
-func (this Place) GetPlaceById(id uint, place *db.Place) error {
+func (p *Place) GetPlaceById(id uint, place *db.Place) error {
 	var err error
-	this.db.First(&place, id)
+	p.db.First(&place, id)
 	if place.Id == 0 {
 		err = fmt.Errorf("Place with id %d not found", id)
 	}
 	return err
 }
 
-func (this Place) GetPlacesByParams(isMale bool, isFree bool) []db.Place {
+func (p *Place) GetPlacesByParams(isMale bool, isFree bool) []db.Place {
 	var places []db.Place
-	this.db.Where("is_free = ?", isFree).Find(&places)
+	p.db.Where("is_free = ?", isFree).Find(&places)
 
 	var placesRet []db.Place
 	for i := 0; i < len(places); i++ {
 		var room db.Room
-		this.db.First(&room, places[i].RoomId)
+		p.db.First(&room, places[i].RoomId)
 		if room.IsMale == isMale {
 			placesRet = append(placesRet, places[i])
 		}

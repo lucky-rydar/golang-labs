@@ -6,23 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type IUser interface {
-	AddUser(name string, pass string, isAdmin bool) (db.User, error)
-	GetUserByUsername(username string, user *db.User) error
-	GetUsersAmount() (int, error)
-	UserExists(name string) bool
-	IsUserAdmin(uuid string) (bool, error)
-}
-
 type User struct {
 	db *gorm.DB
 }
 
-func NewUser(db *gorm.DB) IUser {
+func NewUser(db *gorm.DB) *User {
 	return &User{db: db}
 }
 
-func (this User) AddUser(name string, pass string, isAdmin bool) (db.User, error) {
+func (u *User) AddUser(name string, pass string, isAdmin bool) (db.User, error) {
 	// add user to db
 	user := db.User{
 		Username: name,
@@ -30,36 +22,36 @@ func (this User) AddUser(name string, pass string, isAdmin bool) (db.User, error
 		IsAdmin:  isAdmin,
 		UUID:     uuid.New().String(),
 	}
-	this.db.Create(&user)
+	u.db.Create(&user)
 	return user, nil
 }
 
-func (this User) GetUserByUsername(username string, user *db.User) error {
-	err := this.db.Where("username = ?", username).First(&user).Error
+func (u *User) GetUserByUsername(username string, user *db.User) error {
+	err := u.db.Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (this User) GetUsersAmount() (int, error) {
+func (u *User) GetUsersAmount() (int, error) {
 	var users []db.User
-	err := this.db.Find(&users).Error
+	err := u.db.Find(&users).Error
 	if err != nil {
 		return 0, err
 	}
 	return len(users), nil
 }
 
-func (this User) UserExists(name string) bool {
+func (u *User) UserExists(name string) bool {
 	var users []db.User
-	this.db.Where("username = ?", name).Find(&users)
+	u.db.Where("username = ?", name).Find(&users)
 	return len(users) > 0
 }
 
-func (this User) IsUserAdmin(uuid string) (bool, error) {
+func (u *User) IsUserAdmin(uuid string) (bool, error) {
 	var user db.User
-	err := this.db.Where("uuid = ?", uuid).First(&user).Error
+	err := u.db.Where("uuid = ?", uuid).First(&user).Error
 	if err != nil {
 		return false, err
 	}

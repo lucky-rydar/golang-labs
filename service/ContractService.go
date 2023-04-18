@@ -3,36 +3,37 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/repository"
 	"github.com/it-02/dormitory/db"
 )
 
-type IContractService interface {
-	AddContract(uuid string) (db.Contract, error)
-	GetContracts(uuid string) ([]db.Contract, error)
+type IContract interface {
+	AddContract() db.Contract
+	GetContracts() []db.Contract
+	GetContractById(id uint, contract *db.Contract) error
+	RemoveContractById(id uint) error
 }
 
 type ContractService struct {
-	contract_repository repository.IContract
+	contract_repository IContract
 	user_service IUserService
 }
 
-func NewContractService(contract_repository repository.IContract, user_service IUserService) IContractService {
+func NewContractService(contract_repository IContract, user_service IUserService) *ContractService {
 	return &ContractService{contract_repository: contract_repository, user_service: user_service}
 }
 
-func (this ContractService) AddContract(uuid string) (db.Contract, error) {
-	if !this.user_service.IsUserAdmin(uuid) {
+func (cs *ContractService) AddContract(uuid string) (db.Contract, error) {
+	if !cs.user_service.IsUserAdmin(uuid) {
 		return db.Contract{}, fmt.Errorf("User is not admin")
 	}
 
-	return this.contract_repository.AddContract(), nil
+	return cs.contract_repository.AddContract(), nil
 }
 
-func (this ContractService) GetContracts(uuid string) ([]db.Contract, error) {
-	if !this.user_service.IsUserAdmin(uuid) {
+func (cs *ContractService) GetContracts(uuid string) ([]db.Contract, error) {
+	if !cs.user_service.IsUserAdmin(uuid) {
 		return []db.Contract{}, fmt.Errorf("User is not admin")
 	}
 
-	return this.contract_repository.GetContracts(), nil
+	return cs.contract_repository.GetContracts(), nil
 }

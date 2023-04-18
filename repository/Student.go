@@ -7,104 +7,93 @@ import (
 	"gorm.io/gorm"
 )
 
-type IStudent interface {
-	AddStudent(student *db.Student) error
-	SetContract(student_id uint, contract_id uint) error
-	GetStudents() []db.Student
-	GetStudentById(id uint) db.Student
-	GetStudentByTicketId(ticket_id uint) db.Student
-	SetStudentToPlace(student_id uint, place_id uint) error
-	UnsetStudentFromPlace(student_id uint) error
-	GetStudentsByPlaceIds(place_ids []uint) []db.Student
-}
-
 type Student struct {
 	db *gorm.DB
 	place_repository IPlace
 }
 
-func NewStudent(db *gorm.DB, place_repository IPlace) IStudent {
+func NewStudent(db *gorm.DB, place_repository IPlace) *Student {
 	return &Student{db: db, place_repository: place_repository}
 }
 
-func (this Student) AddStudent(student *db.Student) error {
+func (s *Student) AddStudent(student *db.Student) error {
 	var err error
 	var existingStudent db.Student
-	this.db.First(&existingStudent, "name = ? AND surname = ?", student.Name, student.Surname)
+	s.db.First(&existingStudent, "name = ? AND surname = ?", student.Name, student.Surname)
 	if existingStudent.Id != 0 {
-		fmt.Println("Student with this name and surname already exists")
-		err = fmt.Errorf("Student with this name and surname already exists")
+		fmt.Println("Student with s name and surname already exists")
+		err = fmt.Errorf("Student with s name and surname already exists")
 	} else {
-		this.db.Create(&student)
+		s.db.Create(&student)
 	}
 	return err
 }
 
-func (this Student) SetContract(student_id uint, contract_id uint) error {
-	student := this.GetStudentById(student_id)
+func (s *Student) SetContract(student_id uint, contract_id uint) error {
+	student := s.GetStudentById(student_id)
 	student.ContractId = contract_id
-	this.db.Save(&student)
+	s.db.Save(&student)
 
 	return nil
 }
 
-func (this Student) GetStudents() []db.Student {
+func (s *Student) GetStudents() []db.Student {
 	var students []db.Student
-	this.db.Find(&students)
+	s.db.Find(&students)
 	return students
 }
 
-func (this Student) GetStudentById(id uint) db.Student {
+func (s *Student) GetStudentById(id uint) db.Student {
 	var student db.Student
-	this.db.Where("id = ?", id).First(&student)
+	s.db.Where("id = ?", id).First(&student)
 	return student
 }
 
-func (this Student) GetStudentByTicketId(ticket_id uint) db.Student {
+func (s *Student) GetStudentByTicketId(ticket_id uint) db.Student {
 	var student db.Student
-	this.db.Where("student_ticket_id = ?", ticket_id).First(&student)
+	s.db.Where("student_ticket_id = ?", ticket_id).First(&student)
 	return student
 }
 
-func (this Student) SetStudentToPlace(student_id uint, place_id uint) error {
-	student := this.GetStudentById(student_id)
+func (s *Student) SetStudentToPlace(student_id uint, place_id uint) error {
+	student := s.GetStudentById(student_id)
 
 	place := db.Place{}
-	err := this.place_repository.GetPlaceById(place_id, &place)
+	err := s.place_repository.GetPlaceById(place_id, &place)
 	if err != nil {
 		return err
 	}
 
 	student.PlaceId = place_id
-	this.db.Save(&student)
+	s.db.Save(&student)
 
 	place.IsFree = false
-	this.db.Save(&place)
+	s.db.Save(&place)
 
 	return nil
 }
 
-func (this Student) UnsetStudentFromPlace(student_id uint) error {
-	student := this.GetStudentById(student_id)
+func (s *Student) UnsetStudentFromPlace(student_id uint) error {
+	student := s.GetStudentById(student_id)
 	
 	// make place free
 	place := db.Place{}
-	err := this.place_repository.GetPlaceById(student.PlaceId, &place)
+	err := s.place_repository.GetPlaceById(student.PlaceId, &place)
 	if err != nil {
 		return err
 	}
 
 	place.IsFree = true
-	this.db.Save(&place)
+	s.db.Save(&place)
 	
 	student.PlaceId = 0
-	this.db.Save(&student)
+	s.db.Save(&student)
 
 	return nil
 }
 
-func (this Student) GetStudentsByPlaceIds(place_ids []uint) []db.Student {
+func (s *Student) GetStudentsByPlaceIds(place_ids []uint) []db.Student {
 	var students []db.Student
-	this.db.Where("place_id IN (?)", place_ids).Find(&students)
+	s.db.Where("place_id IN (?)", place_ids).Find(&students)
 	return students
 }

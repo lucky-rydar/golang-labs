@@ -7,11 +7,6 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
-type IUserController interface {
-	RegisterUserHandler(w http.ResponseWriter, r *http.Request)
-	LoginUserHandler(w http.ResponseWriter, r *http.Request)
-}
-
 type UserController struct {
 	user_service service.IUserService
 }
@@ -27,7 +22,7 @@ type RegisterUserRequest struct {
 	Password string
 }
 
-func (this UserController) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	var request RegisterUserRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -35,7 +30,7 @@ func (this UserController) RegisterUserHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = this.user_service.RegisterUser(request.Username, request.Password)
+	err = uc.user_service.RegisterUser(request.Username, request.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -51,7 +46,7 @@ type LoginResponse struct {
 	Uuid string
 }
 
-func (this UserController) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	var request LoginUserRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -59,7 +54,7 @@ func (this UserController) LoginUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	user_uuid, err := this.user_service.LoginUser(request.Username, request.Password)
+	user_uuid, err := uc.user_service.LoginUser(request.Username, request.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

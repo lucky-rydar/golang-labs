@@ -4,19 +4,19 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/db"
 )
 
-type IContractController interface {
-	AddContractHandler(w http.ResponseWriter, r *http.Request)
-	GetContractsHandler(w http.ResponseWriter, r *http.Request)
+type IContractService interface {
+	AddContract(uuid string) (db.Contract, error)
+	GetContracts(uuid string) ([]db.Contract, error)
 }
 
 type ContractController struct {
-	contract_service service.IContractService
+	contract_service IContractService
 }
 
-func NewContractController(contract_service service.IContractService) *ContractController {
+func NewContractController(contract_service IContractService) *ContractController {
 	return &ContractController{
 		contract_service: contract_service,
 	}
@@ -26,7 +26,7 @@ type AddContractRequest struct {
 	UUID string `json:"uuid"`
 }
 
-func (this ContractController) AddContractHandler(w http.ResponseWriter, r *http.Request) {
+func (cc *ContractController) AddContractHandler(w http.ResponseWriter, r *http.Request) {
 	var request AddContractRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -34,7 +34,7 @@ func (this ContractController) AddContractHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	contract, err := this.contract_service.AddContract(request.UUID)
+	contract, err := cc.contract_service.AddContract(request.UUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -51,7 +51,7 @@ type GetContractsRequest struct {
 	UUID string `json:"uuid"`
 }
 
-func (this ContractController) GetContractsHandler(w http.ResponseWriter, r *http.Request) {
+func (cc *ContractController) GetContractsHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetContractsRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -59,7 +59,7 @@ func (this ContractController) GetContractsHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	contracts, err := this.contract_service.GetContracts(request.UUID)
+	contracts, err := cc.contract_service.GetContracts(request.UUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
