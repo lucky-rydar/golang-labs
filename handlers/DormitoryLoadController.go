@@ -7,11 +7,15 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
-type DormitoryLoadController struct {
-	dormitory_load_service service.IDormitoryLoadService
+type IDormitoryLoadService interface {
+	GetDormitoryLoad(uuid string) (service.DormitoryLoad, error)
 }
 
-func NewDormitoryLoadController(dormitory_load_service service.IDormitoryLoadService) *DormitoryLoadController {
+type DormitoryLoadController struct {
+	dormitory_load_service IDormitoryLoadService
+}
+
+func NewDormitoryLoadController(dormitory_load_service IDormitoryLoadService) *DormitoryLoadController {
 	return &DormitoryLoadController{
 		dormitory_load_service: dormitory_load_service,
 	}

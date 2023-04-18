@@ -8,11 +8,18 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-type RoomController struct {
-	room_service service.IRoomService
+type IRoomService interface {
+	AddRoom(uuid string, room *db.Room) error
+	GetRooms() []db.Room
+	GetRoomByPlaceId(placeId uint) db.Room
+	GetRoomStatsByNumber(number string, room_stats *service.RoomStats) error
 }
 
-func NewRoomController(room_service service.IRoomService) *RoomController {
+type RoomController struct {
+	room_service IRoomService
+}
+
+func NewRoomController(room_service IRoomService) *RoomController {
 	return &RoomController{
 		room_service: room_service,
 	}

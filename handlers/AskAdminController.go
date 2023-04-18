@@ -5,14 +5,24 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/db"
 )
 
-type AskAdminController struct {
-	ask_admin_service service.IAskAdminService
+type IAskAdminService interface {
+	AskAdminRegister(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error
+	AskAdminSignContract(studentTicketNumber string) error
+	AskAdminUnsettle(studentTicketNumber string) error
+	AskAdminSettle(studentTicketNumber string, roomNumber string) error
+	AskAdminResettle(studentTicketNumber string, roomNumber string) error
+	GetActions(uuid string) ([]db.AskAdmin, error)
+	ResolveAction(uuid string, actionId uint, isApproved bool) error
 }
 
-func NewAskAdminController(ask_admin_service service.IAskAdminService) *AskAdminController {
+type AskAdminController struct {
+	ask_admin_service IAskAdminService
+}
+
+func NewAskAdminController(ask_admin_service IAskAdminService) *AskAdminController {
 	return &AskAdminController{ask_admin_service: ask_admin_service}
 }
 

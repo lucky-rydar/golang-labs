@@ -8,23 +8,13 @@ import (
 	"github.com/it-02/dormitory/repository"
 )
 
-type IAskAdminService interface {
-	AskAdminRegister(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error
-	AskAdminSignContract(studentTicketNumber string) error
-	AskAdminUnsettle(studentTicketNumber string) error
-	AskAdminSettle(studentTicketNumber string, roomNumber string) error
-	AskAdminResettle(studentTicketNumber string, roomNumber string) error
-	GetActions(uuid string) ([]db.AskAdmin, error)
-	ResolveAction(uuid string, actionId uint, isApproved bool) error
-}
-
 type AskAdminService struct {
 	ask_admin_repository repository.IAskAdmin
 	user_service IUserService
 	student_service IStudentService
 }
 
-func NewAskAdminService(ask_admin_repository repository.IAskAdmin, user_service IUserService, student_service IStudentService) IAskAdminService {
+func NewAskAdminService(ask_admin_repository repository.IAskAdmin, user_service IUserService, student_service IStudentService) *AskAdminService {
 	return &AskAdminService{ask_admin_repository: ask_admin_repository, user_service: user_service, student_service: student_service}
 }
 

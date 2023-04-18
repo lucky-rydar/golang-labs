@@ -7,17 +7,13 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-type IDormitoryLoadService interface {
-	GetDormitoryLoad(uuid string) (DormitoryLoad, error)
-}
-
 type DormitoryLoadService struct {
 	place_repository repository.IPlace
 	room_repository repository.IRoom
 	user_service IUserService
 }
 
-func NewDormitoryLoadService(place_repository repository.IPlace, room_repository repository.IRoom, user_service IUserService) IDormitoryLoadService {
+func NewDormitoryLoadService(place_repository repository.IPlace, room_repository repository.IRoom, user_service IUserService) *DormitoryLoadService {
 	return &DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
 }
 

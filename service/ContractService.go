@@ -7,17 +7,12 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
-type IContractService interface {
-	AddContract(uuid string) (db.Contract, error)
-	GetContracts(uuid string) ([]db.Contract, error)
-}
-
 type ContractService struct {
 	contract_repository repository.IContract
 	user_service IUserService
 }
 
-func NewContractService(contract_repository repository.IContract, user_service IUserService) IContractService {
+func NewContractService(contract_repository repository.IContract, user_service IUserService) *ContractService {
 	return &ContractService{contract_repository: contract_repository, user_service: user_service}
 }
 

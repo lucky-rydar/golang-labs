@@ -4,14 +4,21 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/db"
 )
 
-type PlaceController struct {
-	place_service service.IPlaceService
+type IPlaceService interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
 }
 
-func NewPlaceController(place_service service.IPlaceService) *PlaceController {
+type PlaceController struct {
+	place_service IPlaceService
+}
+
+func NewPlaceController(place_service IPlaceService) *PlaceController {
 	return &PlaceController{
 		place_service: place_service,
 	}

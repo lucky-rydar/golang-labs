@@ -26,7 +26,7 @@ type StudentService struct {
 	user_service IUserService
 }
 
-func NewStudentService(student_repository repository.IStudent, student_ticket_repository repository.IStudentTicket, room_repository repository.IRoom, place_repository repository.IPlace, contract_repository repository.IContract, user_service IUserService) IStudentService {
+func NewStudentService(student_repository repository.IStudent, student_ticket_repository repository.IStudentTicket, room_repository repository.IRoom, place_repository repository.IPlace, contract_repository repository.IContract, user_service IUserService) *StudentService {
 	return &StudentService{student_repository: student_repository, student_ticket_repository: student_ticket_repository, room_repository: room_repository, place_repository: place_repository, contract_repository: contract_repository, user_service: user_service}
 }
 

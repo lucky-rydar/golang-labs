@@ -4,14 +4,19 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/db"
 )
 
-type ContractController struct {
-	contract_service service.IContractService
+type IContractService interface {
+	AddContract(uuid string) (db.Contract, error)
+	GetContracts(uuid string) ([]db.Contract, error)
 }
 
-func NewContractController(contract_service service.IContractService) *ContractController {
+type ContractController struct {
+	contract_service IContractService
+}
+
+func NewContractController(contract_service IContractService) *ContractController {
 	return &ContractController{
 		contract_service: contract_service,
 	}

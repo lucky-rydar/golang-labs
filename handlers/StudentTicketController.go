@@ -5,15 +5,20 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/it-02/dormitory/service"
 	"github.com/it-02/dormitory/db"
 )
 
-type StudentTicketController struct {
-	student_ticket_service service.IStudentTicketService
+type IStudentTicketService interface {
+	AddStudentTicket(studentTicket *db.StudentTicket) error
+	GetStudentTickets() []db.StudentTicket
+	GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket
 }
 
-func NewStudentTicketController(student_ticket_service service.IStudentTicketService) *StudentTicketController {
+type StudentTicketController struct {
+	student_ticket_service IStudentTicketService
+}
+
+func NewStudentTicketController(student_ticket_service IStudentTicketService) *StudentTicketController {
 	return &StudentTicketController{
 		student_ticket_service: student_ticket_service,
 	}
