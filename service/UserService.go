@@ -4,8 +4,15 @@ import (
 	"fmt"
 
 	"github.com/it-02/dormitory/db"
-	"github.com/it-02/dormitory/repository"
 )
+
+type IUser interface {
+	AddUser(name string, pass string, isAdmin bool) (db.User, error)
+	GetUserByUsername(username string, user *db.User) error
+	GetUsersAmount() (int, error)
+	UserExists(name string) bool
+	IsUserAdmin(uuid string) (bool, error)
+}
 
 type IUserService interface {
 	RegisterUser(name string, pass string) error
@@ -14,10 +21,10 @@ type IUserService interface {
 }
 
 type UserService struct {
-	user_repository repository.IUser
+	user_repository IUser
 }
 
-func NewUserService(user_repository repository.IUser) IUserService {
+func NewUserService(user_repository IUser) IUserService {
 	return &UserService{user_repository: user_repository}
 }
 

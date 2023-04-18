@@ -1,15 +1,21 @@
 package service
 
 import (
-	"github.com/it-02/dormitory/repository"
 	"github.com/it-02/dormitory/db"
 )
 
-type StudentTicketService struct {
-	student_ticket_repository repository.IStudentTicket
+type IStudentTicket interface {
+	AddStudentTicket(ticket *db.StudentTicket) error
+	GetStudentTickets() []db.StudentTicket
+	GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket
+	GetStudentTicketById(id uint) db.StudentTicket
 }
 
-func NewStudentTicketService(student_ticket_repository repository.IStudentTicket) *StudentTicketService {
+type StudentTicketService struct {
+	student_ticket_repository IStudentTicket
+}
+
+func NewStudentTicketService(student_ticket_repository IStudentTicket) *StudentTicketService {
 	return &StudentTicketService{
 		student_ticket_repository: student_ticket_repository,
 	}

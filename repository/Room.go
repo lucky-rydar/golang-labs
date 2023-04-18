@@ -7,21 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type IRoom interface {
-	AddRoom(room *db.Room)
-	GetRooms() []db.Room
-	GetRoomByPlaceId(placeId uint) db.Room
-	GetRoomById(id uint, room *db.Room) error
-	IsRoomNumberExists(roomNumber string) bool
-	RemoveRoomById(id uint) error
-	GetRoomByNumber(number string) db.Room
-}
-
 type Room struct {
 	db *gorm.DB
 }
 
-func NewRoom(db *gorm.DB) IRoom {
+func NewRoom(db *gorm.DB) *Room {
 	return &Room{db: db}
 }
 

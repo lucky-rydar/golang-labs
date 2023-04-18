@@ -21,7 +21,7 @@ type Place struct {
 	db *gorm.DB
 }
 
-func NewPlace(db *gorm.DB) IPlace {
+func NewPlace(db *gorm.DB) *Place {
 	return &Place{db: db}
 }
 

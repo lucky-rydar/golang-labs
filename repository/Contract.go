@@ -8,18 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type IContract interface {
-	AddContract() db.Contract
-	GetContracts() []db.Contract
-	GetContractById(id uint, contract *db.Contract) error
-	RemoveContractById(id uint) error
-}
-
 type Contract struct {
 	db *gorm.DB
 }
 
-func NewContract(db *gorm.DB) IContract {
+func NewContract(db *gorm.DB) *Contract {
 	return &Contract{db: db}
 }
 

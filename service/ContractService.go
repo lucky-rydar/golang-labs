@@ -3,16 +3,22 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/repository"
 	"github.com/it-02/dormitory/db"
 )
 
+type IContract interface {
+	AddContract() db.Contract
+	GetContracts() []db.Contract
+	GetContractById(id uint, contract *db.Contract) error
+	RemoveContractById(id uint) error
+}
+
 type ContractService struct {
-	contract_repository repository.IContract
+	contract_repository IContract
 	user_service IUserService
 }
 
-func NewContractService(contract_repository repository.IContract, user_service IUserService) *ContractService {
+func NewContractService(contract_repository IContract, user_service IUserService) *ContractService {
 	return &ContractService{contract_repository: contract_repository, user_service: user_service}
 }
 

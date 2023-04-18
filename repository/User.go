@@ -6,19 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type IUser interface {
-	AddUser(name string, pass string, isAdmin bool) (db.User, error)
-	GetUserByUsername(username string, user *db.User) error
-	GetUsersAmount() (int, error)
-	UserExists(name string) bool
-	IsUserAdmin(uuid string) (bool, error)
-}
-
 type User struct {
 	db *gorm.DB
 }
 
-func NewUser(db *gorm.DB) IUser {
+func NewUser(db *gorm.DB) *User {
 	return &User{db: db}
 }
 

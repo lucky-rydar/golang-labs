@@ -7,18 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type IStudentTicket interface {
-	AddStudentTicket(ticket *db.StudentTicket) error
-	GetStudentTickets() []db.StudentTicket
-	GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket
-	GetStudentTicketById(id uint) db.StudentTicket
-}
-
 type StudentTicket struct {
 	db *gorm.DB
 }
 
-func NewStudentTicket(db *gorm.DB) IStudentTicket {
+func NewStudentTicket(db *gorm.DB) *StudentTicket {
 	return &StudentTicket{db: db}
 }
 

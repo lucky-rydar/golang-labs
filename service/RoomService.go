@@ -7,14 +7,24 @@ import (
 	"github.com/it-02/dormitory/db"
 )
 
+type IRoom interface {
+	AddRoom(room *db.Room)
+	GetRooms() []db.Room
+	GetRoomByPlaceId(placeId uint) db.Room
+	GetRoomById(id uint, room *db.Room) error
+	IsRoomNumberExists(roomNumber string) bool
+	RemoveRoomById(id uint) error
+	GetRoomByNumber(number string) db.Room
+}
+
 type RoomService struct {
-	room_repository repository.IRoom
+	room_repository IRoom
 	place_repository repository.IPlace
-	student_repository repository.IStudent
+	student_repository IStudent
 	user_service IUserService
 }
 
-func NewRoomService(room_repository repository.IRoom, place_repository repository.IPlace, student_repository repository.IStudent, user_service IUserService) *RoomService {
+func NewRoomService(room_repository IRoom, place_repository repository.IPlace, student_repository IStudent, user_service IUserService) *RoomService {
 	return &RoomService{room_repository: room_repository, place_repository: place_repository, student_repository: student_repository, user_service: user_service}
 }
 

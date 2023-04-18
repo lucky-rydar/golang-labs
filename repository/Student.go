@@ -7,23 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type IStudent interface {
-	AddStudent(student *db.Student) error
-	SetContract(student_id uint, contract_id uint) error
-	GetStudents() []db.Student
-	GetStudentById(id uint) db.Student
-	GetStudentByTicketId(ticket_id uint) db.Student
-	SetStudentToPlace(student_id uint, place_id uint) error
-	UnsetStudentFromPlace(student_id uint) error
-	GetStudentsByPlaceIds(place_ids []uint) []db.Student
-}
-
 type Student struct {
 	db *gorm.DB
 	place_repository IPlace
 }
 
-func NewStudent(db *gorm.DB, place_repository IPlace) IStudent {
+func NewStudent(db *gorm.DB, place_repository IPlace) *Student {
 	return &Student{db: db, place_repository: place_repository}
 }
 

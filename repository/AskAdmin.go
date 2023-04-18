@@ -7,22 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type IAskAdmin interface {
-	AddRegisterAction(name string, surname string, isMale bool, studentTicketNumber string, studentTicketExpireDate time.Time) error
-	AddSignContractAction(studentTicketNumber string) error
-	AddUnsettleAction(studentTicketNumber string) error
-	AddSettleAction(studentTicketNumber string, roomNumber string) error
-	AddResettleAction(studentTicketNumber string, roomNumber string) error
-	GetActions() ([]db.AskAdmin, error)
-	GetActionById(id uint) (db.AskAdmin, error)
-	DeleteActionById(id uint) error
-}
-
 type AskAdmin struct {
 	db *gorm.DB
 }
 
-func NewAskAdmin(db *gorm.DB) IAskAdmin {
+func NewAskAdmin(db *gorm.DB) *AskAdmin {
 	return &AskAdmin{db: db}
 }
 

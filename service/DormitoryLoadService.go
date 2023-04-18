@@ -3,17 +3,17 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/repository"
 	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/repository"
 )
 
 type DormitoryLoadService struct {
 	place_repository repository.IPlace
-	room_repository repository.IRoom
+	room_repository IRoom
 	user_service IUserService
 }
 
-func NewDormitoryLoadService(place_repository repository.IPlace, room_repository repository.IRoom, user_service IUserService) *DormitoryLoadService {
+func NewDormitoryLoadService(place_repository repository.IPlace, room_repository IRoom, user_service IUserService) *DormitoryLoadService {
 	return &DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
 }
 

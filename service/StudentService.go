@@ -8,6 +8,17 @@ import (
 	"github.com/it-02/dormitory/repository"
 )
 
+type IStudent interface {
+	AddStudent(student *db.Student) error
+	SetContract(student_id uint, contract_id uint) error
+	GetStudents() []db.Student
+	GetStudentById(id uint) db.Student
+	GetStudentByTicketId(ticket_id uint) db.Student
+	SetStudentToPlace(student_id uint, place_id uint) error
+	UnsetStudentFromPlace(student_id uint) error
+	GetStudentsByPlaceIds(place_ids []uint) []db.Student
+}
+
 type IStudentService interface {
 	RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error
 	SignContract(student_ticket_number string) error
@@ -18,15 +29,15 @@ type IStudentService interface {
 }
 
 type StudentService struct {
-	student_repository repository.IStudent
-	student_ticket_repository repository.IStudentTicket
-	room_repository repository.IRoom
+	student_repository IStudent
+	student_ticket_repository IStudentTicket
+	room_repository IRoom
 	place_repository repository.IPlace
-	contract_repository repository.IContract
+	contract_repository IContract
 	user_service IUserService
 }
 
-func NewStudentService(student_repository repository.IStudent, student_ticket_repository repository.IStudentTicket, room_repository repository.IRoom, place_repository repository.IPlace, contract_repository repository.IContract, user_service IUserService) *StudentService {
+func NewStudentService(student_repository IStudent, student_ticket_repository IStudentTicket, room_repository IRoom, place_repository repository.IPlace, contract_repository IContract, user_service IUserService) *StudentService {
 	return &StudentService{student_repository: student_repository, student_ticket_repository: student_ticket_repository, room_repository: room_repository, place_repository: place_repository, contract_repository: contract_repository, user_service: user_service}
 }
 
