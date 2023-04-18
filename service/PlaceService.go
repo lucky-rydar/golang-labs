@@ -20,18 +20,18 @@ func NewPlaceService(place_repository repository.IPlace) IPlaceService {
 	return &PlaceService{place_repository: place_repository}
 }
 
-func (this PlaceService) GetPlaces() []db.Place {
-	return this.place_repository.GetPlaces()
+func (ps *PlaceService) GetPlaces() []db.Place {
+	return ps.place_repository.GetPlaces()
 }
 
-func (this PlaceService) GetFreePlaces() []db.Place {
-	return this.place_repository.GetFreePlaces()
+func (ps *PlaceService) GetFreePlaces() []db.Place {
+	return ps.place_repository.GetFreePlaces()
 }
 
-func (this PlaceService) GetFreePlacesByRoomId(roomId uint) []db.Place {
-	return this.place_repository.GetFreePlacesByRoomId(roomId)
+func (ps *PlaceService) GetFreePlacesByRoomId(roomId uint) []db.Place {
+	return ps.place_repository.GetFreePlacesByRoomId(roomId)
 }
 
-func (this PlaceService) GetPlacesByRoomId(roomId uint) []db.Place {
-	return this.place_repository.GetPlacesByRoomId(roomId)
+func (ps *PlaceService) GetPlacesByRoomId(roomId uint) []db.Place {
+	return ps.place_repository.GetPlacesByRoomId(roomId)
 }

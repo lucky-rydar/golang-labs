@@ -25,25 +25,25 @@ func NewRoomService(room_repository repository.IRoom, place_repository repositor
 	return &RoomService{room_repository: room_repository, place_repository: place_repository, student_repository: student_repository, user_service: user_service}
 }
 
-func (this RoomService) AddRoom(uuid string, room *db.Room) error {
-	if !this.user_service.IsUserAdmin(uuid) {
+func (rs *RoomService) AddRoom(uuid string, room *db.Room) error {
+	if !rs.user_service.IsUserAdmin(uuid) {
 		return fmt.Errorf("User is not admin")
 	}
 
-	if !this.room_repository.IsRoomNumberExists(room.Number) {
-		this.room_repository.AddRoom(room)
+	if !rs.room_repository.IsRoomNumberExists(room.Number) {
+		rs.room_repository.AddRoom(room)
 	} else {
 		return fmt.Errorf("Room with number %s already exists", room.Number)
 	}
 	return nil
 }
 
-func (this RoomService) GetRooms() []db.Room {
-	return this.room_repository.GetRooms()
+func (rs *RoomService) GetRooms() []db.Room {
+	return rs.room_repository.GetRooms()
 }
 
-func (this RoomService) GetRoomByPlaceId(placeId uint) db.Room {
-	return this.room_repository.GetRoomByPlaceId(placeId)
+func (rs *RoomService) GetRoomByPlaceId(placeId uint) db.Room {
+	return rs.room_repository.GetRoomByPlaceId(placeId)
 }
 
 type RoomStats struct {
@@ -55,8 +55,8 @@ type RoomStats struct {
 	StudentsLiving []db.Student
 }
 
-func (this RoomService) GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
-	room := this.room_repository.GetRoomByNumber(number)
+func (rs *RoomService) GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
+	room := rs.room_repository.GetRoomByNumber(number)
 	if room.Id == 0 {
 		return fmt.Errorf("Room with number %s not found", number)
 	}
@@ -65,10 +65,10 @@ func (this RoomService) GetRoomStatsByNumber(number string, room_stats *RoomStat
 	room_stats.IsMale = room.IsMale
 	room_stats.AreaSqMeters = room.AreaSqMeters
 
-	occupiedPlaces := this.place_repository.GetOccupiedPlacesByRoomId(room.Id)
+	occupiedPlaces := rs.place_repository.GetOccupiedPlacesByRoomId(room.Id)
 	room_stats.OccupiedPlaces = occupiedPlaces
 
-	freePlaces := this.place_repository.GetFreePlacesByRoomId(room.Id)
+	freePlaces := rs.place_repository.GetFreePlacesByRoomId(room.Id)
 	room_stats.FreePlaces = freePlaces
 
 	var occupiedPlaceIds []uint
@@ -76,7 +76,7 @@ func (this RoomService) GetRoomStatsByNumber(number string, room_stats *RoomStat
 		occupiedPlaceIds = append(occupiedPlaceIds, place.Id)
 	}
 
-	studentsLiving := this.student_repository.GetStudentsByPlaceIds(occupiedPlaceIds)
+	studentsLiving := rs.student_repository.GetStudentsByPlaceIds(occupiedPlaceIds)
 	room_stats.StudentsLiving = studentsLiving
 
 	return nil
