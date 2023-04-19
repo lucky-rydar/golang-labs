@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 )
 
 type IAskAdmin interface {
@@ -16,6 +16,19 @@ type IAskAdmin interface {
 	GetActions() ([]db.AskAdmin, error)
 	GetActionById(id uint) (db.AskAdmin, error)
 	DeleteActionById(id uint) error
+}
+
+type IUserService interface {
+	IsUserAdmin(uuid string) bool
+}
+
+type IStudentService interface {
+	RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error
+	SignContract(student_ticket_number string) error
+	Settle(student_ticket_number string, roomNumber string) error
+	Unsettle(student_ticket_number string) error
+	Resettle(student_ticket_number string, roomNumber string) error
+	GetStudents(uuid string) (error, []StudentRepr)
 }
 
 type AskAdminService struct {

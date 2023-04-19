@@ -2,11 +2,21 @@ package service
 
 import (
 	"github.com/it-02/dormitory/repository"
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 )
 
+type IPlace interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
+	GetPlaceById(id uint, place *db.Place) error
+	GetPlacesByParams(isMale bool, isFree bool) []db.Place
+}
+
 type PlaceService struct {
-	place_repository repository.IPlace
+	place_repository IPlace
 }
 
 func NewPlaceService(place_repository repository.IPlace) *PlaceService {

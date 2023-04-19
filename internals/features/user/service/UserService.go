@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 )
 
 type IUser interface {

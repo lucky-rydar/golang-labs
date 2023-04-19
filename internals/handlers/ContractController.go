@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 )
 
 type IContractService interface {

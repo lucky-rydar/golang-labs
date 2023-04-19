@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 	"github.com/it-02/dormitory/repository"
 )
 
@@ -19,20 +19,49 @@ type IStudent interface {
 	GetStudentsByPlaceIds(place_ids []uint) []db.Student
 }
 
-type IStudentService interface {
-	RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error
-	SignContract(student_ticket_number string) error
-	Settle(student_ticket_number string, roomNumber string) error
-	Unsettle(student_ticket_number string) error
-	Resettle(student_ticket_number string, roomNumber string) error
-	GetStudents(uuid string) (error, []StudentRepr)
+type IStudentTicket interface {
+	AddStudentTicket(ticket *db.StudentTicket) error
+	GetStudentTickets() []db.StudentTicket
+	GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket
+	GetStudentTicketById(id uint) db.StudentTicket
+}
+
+type IRoom interface {
+	AddRoom(room *db.Room)
+	GetRooms() []db.Room
+	GetRoomByPlaceId(placeId uint) db.Room
+	GetRoomById(id uint, room *db.Room) error
+	IsRoomNumberExists(roomNumber string) bool
+	RemoveRoomById(id uint) error
+	GetRoomByNumber(number string) db.Room
+}
+
+type IPlace interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
+	GetPlaceById(id uint, place *db.Place) error
+	GetPlacesByParams(isMale bool, isFree bool) []db.Place
+}
+
+type IContract interface {
+	AddContract() db.Contract
+	GetContracts() []db.Contract
+	GetContractById(id uint, contract *db.Contract) error
+	RemoveContractById(id uint) error
+}
+
+type IUserService interface {
+	IsUserAdmin(uuid string) bool
 }
 
 type StudentService struct {
 	student_repository IStudent
 	student_ticket_repository IStudentTicket
 	room_repository IRoom
-	place_repository repository.IPlace
+	place_repository IPlace
 	contract_repository IContract
 	user_service IUserService
 }
@@ -193,7 +222,7 @@ type StudentRepr struct {
 	Name        string
 	Surname     string
 	IsMale	    bool
-	Place       PlaceRepr
+	Place       structs.PlaceRepr
 	Contract    db.Contract
 	StudentTicket db.StudentTicket
 }
@@ -247,7 +276,7 @@ func (ss *StudentService) GetStudents(uuid string) (error, []StudentRepr) {
 				return err, nil
 			}
 
-			place_repr := PlaceRepr{
+			place_repr := structs.PlaceRepr{
 				PlaceId: place.Id,
 				IsFree: place.IsFree,
 				IsMale: room.IsMale,

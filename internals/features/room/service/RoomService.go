@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/it-02/dormitory/repository"
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 )
 
 type IRoom interface {
@@ -17,9 +17,34 @@ type IRoom interface {
 	GetRoomByNumber(number string) db.Room
 }
 
+type IPlace interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
+	GetPlaceById(id uint, place *db.Place) error
+	GetPlacesByParams(isMale bool, isFree bool) []db.Place
+}
+
+type IStudent interface {
+	AddStudent(student *db.Student) error
+	SetContract(student_id uint, contract_id uint) error
+	GetStudents() []db.Student
+	GetStudentById(id uint) db.Student
+	GetStudentByTicketId(ticket_id uint) db.Student
+	SetStudentToPlace(student_id uint, place_id uint) error
+	UnsetStudentFromPlace(student_id uint) error
+	GetStudentsByPlaceIds(place_ids []uint) []db.Student
+}
+
+type IUserService interface {
+	IsUserAdmin(uuid string) bool
+}
+
 type RoomService struct {
 	room_repository IRoom
-	place_repository repository.IPlace
+	place_repository IPlace
 	student_repository IStudent
 	user_service IUserService
 }

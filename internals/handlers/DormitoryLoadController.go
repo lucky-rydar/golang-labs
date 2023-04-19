@@ -7,16 +7,16 @@ import (
 	"github.com/it-02/dormitory/service"
 )
 
-type IDormitoryLoadService interface {
-	GetDormitoryLoad(uuid string) (service.DormitoryLoad, error)
+type Istructs.DormitoryLoadService interface {
+	Getstructs.DormitoryLoad(uuid string) (service.structs.DormitoryLoad, error)
 }
 
-type DormitoryLoadController struct {
-	dormitory_load_service IDormitoryLoadService
+type structs.DormitoryLoadController struct {
+	dormitory_load_service Istructs.DormitoryLoadService
 }
 
-func NewDormitoryLoadController(dormitory_load_service IDormitoryLoadService) *DormitoryLoadController {
-	return &DormitoryLoadController{
+func Newstructs.DormitoryLoadController(dormitory_load_service Istructs.DormitoryLoadService) *structs.DormitoryLoadController {
+	return &structs.DormitoryLoadController{
 		dormitory_load_service: dormitory_load_service,
 	}
 }
@@ -25,7 +25,7 @@ type GetDormStatsRequest struct {
 	UUID string `json:"uuid"`
 }
 
-func (dlc *DormitoryLoadController) GetDormitoryLoadHandler(w http.ResponseWriter, r *http.Request) {
+func (dlc *structs.DormitoryLoadController) Getstructs.DormitoryLoadHandler(w http.ResponseWriter, r *http.Request) {
 	var request GetDormStatsRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -33,7 +33,7 @@ func (dlc *DormitoryLoadController) GetDormitoryLoadHandler(w http.ResponseWrite
 		return
 	}
 
-	dormitoryLoad, err := dlc.dormitory_load_service.GetDormitoryLoad(request.UUID)
+	dormitoryLoad, err := dlc.dormitory_load_service.Getstructs.DormitoryLoad(request.UUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

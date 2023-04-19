@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/db"
+	"github.com/it-02/dormitory/internals/db"
 )
 
 type IContract interface {
@@ -11,6 +11,10 @@ type IContract interface {
 	GetContracts() []db.Contract
 	GetContractById(id uint, contract *db.Contract) error
 	RemoveContractById(id uint) error
+}
+
+type IUserService interface {
+	IsUserAdmin(uuid string) bool
 }
 
 type ContractService struct {

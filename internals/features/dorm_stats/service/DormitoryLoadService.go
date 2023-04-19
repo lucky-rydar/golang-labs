@@ -3,41 +3,50 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/db"
-	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/internals/db"
+	structs "github.com/it-02/dormitory/internals/features/dorm_stats/repository"
 )
 
-type DormitoryLoadService struct {
-	place_repository repository.IPlace
+type IPlace interface {
+	GetPlaces() []db.Place
+	GetFreePlaces() []db.Place
+	GetFreePlacesByRoomId(roomId uint) []db.Place
+	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
+	GetPlacesByRoomId(roomId uint) []db.Place
+	GetPlaceById(id uint, place *db.Place) error
+	GetPlacesByParams(isMale bool, isFree bool) []db.Place
+}
+
+type IRoom interface {
+	AddRoom(room *db.Room)
+	GetRooms() []db.Room
+	GetRoomByPlaceId(placeId uint) db.Room
+	GetRoomById(id uint, room *db.Room) error
+	IsRoomNumberExists(roomNumber string) bool
+	RemoveRoomById(id uint) error
+	GetRoomByNumber(number string) db.Room
+}
+
+type IUserService interface {
+	IsUserAdmin(uuid string) bool
+}
+
+type structs.DormitoryLoadService struct {
+	place_repository IPlace
 	room_repository IRoom
 	user_service IUserService
 }
 
-func NewDormitoryLoadService(place_repository repository.IPlace, room_repository IRoom, user_service IUserService) *DormitoryLoadService {
-	return &DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
+func Newstructs.DormitoryLoadService(place_repository repository.IPlace, room_repository IRoom, user_service IUserService) *structs.DormitoryLoadService {
+	return &structs.DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
 }
 
-type PlaceRepr struct {
-	PlaceId uint
-	IsMale bool
-	IsFree bool
-	RoomNumber string
-}
-
-type DormitoryLoad struct {
-	TotalPlacesAmount int
-	FreeMalePlaces []PlaceRepr
-	FreeFemalePlaces []PlaceRepr
-	OccupiedMalePlaces []PlaceRepr
-	OccupiedFemalePlaces []PlaceRepr
-}
-
-func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, error) {
+func (dms *structs.DormitoryLoadService) Getstructs.DormitoryLoad(uuid string) (structs.DormitoryLoad, error) {
 	if !dms.user_service.IsUserAdmin(uuid) {
-		return DormitoryLoad{}, fmt.Errorf("User is not admin")
+		return structs.DormitoryLoad{}, fmt.Errorf("User is not admin")
 	}
 
-	var dormitoryLoad DormitoryLoad
+	var dormitoryLoad structs.DormitoryLoad
 	dormitoryLoad.TotalPlacesAmount = len(dms.place_repository.GetPlaces())
 	freeMalePlaces := dms.place_repository.GetPlacesByParams(true, true)
 	for i := 0; i < len(freeMalePlaces); i++ {
@@ -45,10 +54,10 @@ func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, e
 		room := db.Room{}
 		err := dms.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
-			return DormitoryLoad{}, err
+			return structs.DormitoryLoad{}, err
 		}
 
-		place_repr := PlaceRepr{
+		place_repr := structs.PlaceRepr{
 			PlaceId: place.Id,
 			IsFree: place.IsFree,
 			IsMale: room.IsMale,
@@ -63,10 +72,10 @@ func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, e
 		room := db.Room{}
 		err := dms.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
-			return DormitoryLoad{}, err
+			return structs.DormitoryLoad{}, err
 		}
 
-		place_repr := PlaceRepr{
+		place_repr := structs.PlaceRepr{
 			PlaceId: place.Id,
 			IsFree: place.IsFree,
 			IsMale: room.IsMale,
@@ -81,10 +90,10 @@ func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, e
 		room := db.Room{}
 		err := dms.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
-			return DormitoryLoad{}, err
+			return structs.DormitoryLoad{}, err
 		}
 
-		place_repr := PlaceRepr{
+		place_repr := structs.PlaceRepr{
 			PlaceId: place.Id,
 			IsFree: place.IsFree,
 			IsMale: room.IsMale,
@@ -99,10 +108,10 @@ func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (DormitoryLoad, e
 		room := db.Room{}
 		err := dms.room_repository.GetRoomById(place.RoomId, &room)
 		if err != nil {
-			return DormitoryLoad{}, err
+			return structs.DormitoryLoad{}, err
 		}
 
-		place_repr := PlaceRepr{
+		place_repr := structs.PlaceRepr{
 			PlaceId: place.Id,
 			IsFree: place.IsFree,
 			IsMale: room.IsMale,
