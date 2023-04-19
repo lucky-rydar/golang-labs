@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/it-02/dormitory/repository"
 	"github.com/it-02/dormitory/internals/db"
 )
 
@@ -19,7 +18,7 @@ type PlaceService struct {
 	place_repository IPlace
 }
 
-func NewPlaceService(place_repository repository.IPlace) *PlaceService {
+func NewPlaceService(place_repository IPlace) *PlaceService {
 	return &PlaceService{place_repository: place_repository}
 }
 

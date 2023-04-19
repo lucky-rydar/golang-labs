@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/it-02/dormitory/internals/db"
-	structs "github.com/it-02/dormitory/internals/features/dorm_stats/repository"
+	structs "github.com/it-02/dormitory/internals/features/dorm_stats/structs"
 )
 
 type IPlace interface {
@@ -31,17 +31,17 @@ type IUserService interface {
 	IsUserAdmin(uuid string) bool
 }
 
-type structs.DormitoryLoadService struct {
+type DormitoryLoadService struct {
 	place_repository IPlace
 	room_repository IRoom
 	user_service IUserService
 }
 
-func Newstructs.DormitoryLoadService(place_repository repository.IPlace, room_repository IRoom, user_service IUserService) *structs.DormitoryLoadService {
-	return &structs.DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
+func NewDormitoryLoadService(place_repository IPlace, room_repository IRoom, user_service IUserService) *DormitoryLoadService {
+	return &DormitoryLoadService{place_repository: place_repository, room_repository: room_repository, user_service: user_service}
 }
 
-func (dms *structs.DormitoryLoadService) Getstructs.DormitoryLoad(uuid string) (structs.DormitoryLoad, error) {
+func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (structs.DormitoryLoad, error) {
 	if !dms.user_service.IsUserAdmin(uuid) {
 		return structs.DormitoryLoad{}, fmt.Errorf("User is not admin")
 	}

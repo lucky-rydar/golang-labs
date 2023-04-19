@@ -14,17 +14,11 @@ type IUser interface {
 	IsUserAdmin(uuid string) (bool, error)
 }
 
-type IUserService interface {
-	RegisterUser(name string, pass string) error
-	LoginUser(name string, pass string) (string, error)
-	IsUserAdmin(uuid string) bool
-}
-
 type UserService struct {
 	user_repository IUser
 }
 
-func NewUserService(user_repository IUser) IUserService {
+func NewUserService(user_repository IUser) *UserService {
 	return &UserService{user_repository: user_repository}
 }
 

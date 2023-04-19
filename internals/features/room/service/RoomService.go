@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/it-02/dormitory/repository"
 	"github.com/it-02/dormitory/internals/db"
+	"github.com/it-02/dormitory/internals/features/room/structs"
 )
 
 type IRoom interface {
@@ -49,7 +49,7 @@ type RoomService struct {
 	user_service IUserService
 }
 
-func NewRoomService(room_repository IRoom, place_repository repository.IPlace, student_repository IStudent, user_service IUserService) *RoomService {
+func NewRoomService(room_repository IRoom, place_repository IPlace, student_repository IStudent, user_service IUserService) *RoomService {
 	return &RoomService{room_repository: room_repository, place_repository: place_repository, student_repository: student_repository, user_service: user_service}
 }
 
@@ -74,16 +74,7 @@ func (rs *RoomService) GetRoomByPlaceId(placeId uint) db.Room {
 	return rs.room_repository.GetRoomByPlaceId(placeId)
 }
 
-type RoomStats struct {
-	Number string
-	IsMale bool
-	AreaSqMeters float32
-	OccupiedPlaces []db.Place
-	FreePlaces []db.Place
-	StudentsLiving []db.Student
-}
-
-func (rs *RoomService) GetRoomStatsByNumber(number string, room_stats *RoomStats) error {
+func (rs *RoomService) GetRoomStatsByNumber(number string, room_stats *structs.RoomStats) error {
 	room := rs.room_repository.GetRoomByNumber(number)
 	if room.Id == 0 {
 		return fmt.Errorf("Room with number %s not found", number)

@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/it-02/dormitory/internals/db"
-	"github.com/it-02/dormitory/repository"
+	"github.com/it-02/dormitory/internals/features/student/structs"
+	dorm_stats_structs "github.com/it-02/dormitory/internals/features/dorm_stats/structs"
 )
 
 type IStudent interface {
@@ -66,7 +67,7 @@ type StudentService struct {
 	user_service IUserService
 }
 
-func NewStudentService(student_repository IStudent, student_ticket_repository IStudentTicket, room_repository IRoom, place_repository repository.IPlace, contract_repository IContract, user_service IUserService) *StudentService {
+func NewStudentService(student_repository IStudent, student_ticket_repository IStudentTicket, room_repository IRoom, place_repository IPlace, contract_repository IContract, user_service IUserService) *StudentService {
 	return &StudentService{student_repository: student_repository, student_ticket_repository: student_ticket_repository, room_repository: room_repository, place_repository: place_repository, contract_repository: contract_repository, user_service: user_service}
 }
 
@@ -217,28 +218,18 @@ func (ss *StudentService) Resettle(student_ticket_number string, roomNumber stri
 	return nil
 }
 
-type StudentRepr struct {
-	Id          uint
-	Name        string
-	Surname     string
-	IsMale	    bool
-	Place       structs.PlaceRepr
-	Contract    db.Contract
-	StudentTicket db.StudentTicket
-}
-
-func (ss *StudentService) GetStudents(uuid string) (error, []StudentRepr) {
+func (ss *StudentService) GetStudents(uuid string) (error, []structs.StudentRepr) {
 	if !ss.user_service.IsUserAdmin(uuid) {
 		return fmt.Errorf("User is not admin"), nil
 	}
 
-	ret := []StudentRepr{};
+	ret := []structs.StudentRepr{};
 
 	students := ss.student_repository.GetStudents()
 	for i := 0; i < len(students); i++ {
 		student := students[i]
 
-		student_repr := StudentRepr{
+		student_repr := structs.StudentRepr{
 			Id: student.Id,
 			Name: student.Name,
 			Surname: student.Surname,
@@ -276,7 +267,7 @@ func (ss *StudentService) GetStudents(uuid string) (error, []StudentRepr) {
 				return err, nil
 			}
 
-			place_repr := structs.PlaceRepr{
+			place_repr := dorm_stats_structs.PlaceRepr{
 				PlaceId: place.Id,
 				IsFree: place.IsFree,
 				IsMale: room.IsMale,

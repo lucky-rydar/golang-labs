@@ -1,4 +1,4 @@
-package repository
+package structs
 
 type PlaceRepr struct {
 	PlaceId uint

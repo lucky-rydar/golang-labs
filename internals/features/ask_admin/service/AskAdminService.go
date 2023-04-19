@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/it-02/dormitory/internals/db"
+	"github.com/it-02/dormitory/internals/features/student/structs"
 )
 
 type IAskAdmin interface {
@@ -28,7 +29,7 @@ type IStudentService interface {
 	Settle(student_ticket_number string, roomNumber string) error
 	Unsettle(student_ticket_number string) error
 	Resettle(student_ticket_number string, roomNumber string) error
-	GetStudents(uuid string) (error, []StudentRepr)
+	GetStudents(uuid string) (error, []structs.StudentRepr)
 }
 
 type AskAdminService struct {

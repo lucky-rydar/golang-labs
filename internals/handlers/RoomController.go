@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/service"
 	"github.com/it-02/dormitory/internals/db"
+	"github.com/it-02/dormitory/internals/features/room/structs"
 )
 
 type IRoomService interface {
 	AddRoom(uuid string, room *db.Room) error
 	GetRooms() []db.Room
 	GetRoomByPlaceId(placeId uint) db.Room
-	GetRoomStatsByNumber(number string, room_stats *service.RoomStats) error
+	GetRoomStatsByNumber(number string, room_stats *structs.RoomStats) error
 }
 
 type RoomController struct {
@@ -98,7 +98,7 @@ func (rc *RoomController) GetRoomStatsByNumberHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	var roomStats service.RoomStats
+	var roomStats structs.RoomStats
 	err = rc.room_service.GetRoomStatsByNumber(request.Number, &roomStats)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

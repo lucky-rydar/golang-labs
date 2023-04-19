@@ -3,15 +3,19 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/it-02/dormitory/service"
 )
 
-type UserController struct {
-	user_service service.IUserService
+type IUserService interface {
+	RegisterUser(name string, pass string) error
+	LoginUser(name string, pass string) (string, error)
+	IsUserAdmin(uuid string) bool
 }
 
-func NewUserController(user_service service.IUserService) *UserController {
+type UserController struct {
+	user_service IUserService
+}
+
+func NewUserController(user_service IUserService) *UserController {
 	return &UserController{
 		user_service: user_service,
 	}
