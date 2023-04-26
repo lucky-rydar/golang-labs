@@ -6,32 +6,54 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/it-02/dormitory/db"
-	"github.com/it-02/dormitory/handlers"
-	"github.com/it-02/dormitory/repository"
-	"github.com/it-02/dormitory/service"
+	"github.com/it-02/dormitory/internals/db"
+	handlers "github.com/it-02/dormitory/internals/handlers"
+	
+	ask_admin_repository "github.com/it-02/dormitory/internals/features/ask_admin/repository"
+	ask_admin_service "github.com/it-02/dormitory/internals/features/ask_admin/service"
+
+	contract_repository "github.com/it-02/dormitory/internals/features/contract/repository"
+	contract_service "github.com/it-02/dormitory/internals/features/contract/service"
+
+	dormitory_load_service "github.com/it-02/dormitory/internals/features/dorm_stats/service"
+
+	place_repository "github.com/it-02/dormitory/internals/features/place/repository"
+	place_service "github.com/it-02/dormitory/internals/features/place/service"
+
+	room_repository "github.com/it-02/dormitory/internals/features/room/repository"
+	room_service "github.com/it-02/dormitory/internals/features/room/service"
+
+	student_repository "github.com/it-02/dormitory/internals/features/student/repository"
+	student_service "github.com/it-02/dormitory/internals/features/student/service"
+
+	student_ticket_repository "github.com/it-02/dormitory/internals/features/student_ticket/repository"
+	student_ticket_service "github.com/it-02/dormitory/internals/features/student_ticket/service"
+
+	user_repository "github.com/it-02/dormitory/internals/features/user/repository"
+	user_service "github.com/it-02/dormitory/internals/features/user/service"
+
 	"gorm.io/gorm"
 )
 
 func RunHttpServer(db *gorm.DB) {
 	// init repositories
-	room_repository := repository.NewRoom(db)
-	place_repository := repository.NewPlace(db)
-	contract_repository := repository.NewContract(db)
-	student_ticket_repository := repository.NewStudentTicket(db)
-	student_repository := repository.NewStudent(db, place_repository)
-	user_repository := repository.NewUser(db)
-	ask_admin_repository := repository.NewAskAdmin(db)
+	room_repository := room_repository.NewRoom(db)
+	place_repository := place_repository.NewPlace(db)
+	contract_repository := contract_repository.NewContract(db)
+	student_ticket_repository := student_ticket_repository.NewStudentTicket(db)
+	student_repository := student_repository.NewStudent(db, place_repository)
+	user_repository := user_repository.NewUser(db)
+	ask_admin_repository := ask_admin_repository.NewAskAdmin(db)
 
 	// init services
-	user_service := service.NewUserService(user_repository)
-	student_service := service.NewStudentService(student_repository, student_ticket_repository, room_repository, place_repository, contract_repository, user_service)
-	ask_admin_service := service.NewAskAdminService(ask_admin_repository, user_service, student_service)
-	place_service := service.NewPlaceService(place_repository)
-	room_service := service.NewRoomService(room_repository, place_repository, student_repository, user_service)
-	contract_service := service.NewContractService(contract_repository, user_service)
-	student_ticket_service := service.NewStudentTicketService(student_ticket_repository)
-	dormitory_load_service := service.NewDormitoryLoadService(place_repository, room_repository, user_service)
+	user_service := user_service.NewUserService(user_repository)
+	student_service := student_service.NewStudentService(student_repository, student_ticket_repository, room_repository, place_repository, contract_repository, user_service)
+	ask_admin_service := ask_admin_service.NewAskAdminService(ask_admin_repository, user_service, student_service)
+	place_service := place_service.NewPlaceService(place_repository)
+	room_service := room_service.NewRoomService(room_repository, place_repository, student_repository, user_service)
+	contract_service := contract_service.NewContractService(contract_repository, user_service)
+	student_ticket_service := student_ticket_service.NewStudentTicketService(student_ticket_repository)
+	dormitory_load_service := dormitory_load_service.NewDormitoryLoadService(place_repository, room_repository, user_service)
 
 	// init controllers
 	ask_admin_controller := handlers.NewAskAdminController(ask_admin_service)
