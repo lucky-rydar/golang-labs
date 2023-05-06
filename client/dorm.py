@@ -4,8 +4,12 @@ import argparse
 import requests
 import json
 
-SERVER_ADDR = 'http://localhost:8080'
-TOKEN_FILE = 'token'
+cfg = None
+with open('dorm_cfg.json', 'r') as f:
+    cfg = json.load(f)
+
+SERVER_ADDR = 'http://' + cfg['server_ip'] + ':' + str(cfg['server_port'])
+TOKEN_FILE = cfg['token_file']
 
 def parser_init():
     parser = argparse.ArgumentParser(description='Dormitory Management System')
