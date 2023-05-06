@@ -104,14 +104,16 @@ func RunHttpServer(db *gorm.DB) {
 	mux.HandleFunc("/user/register", user_controller.RegisterUserHandler)
 	mux.HandleFunc("/user/login", user_controller.LoginUserHandler)
 
+	port := "80"
+
 	srv := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":" + port,
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
 
-	fmt.Println("Server is listening on port 8080")
+	fmt.Println("Server is listening on port " + port + "...")
 	err := srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
