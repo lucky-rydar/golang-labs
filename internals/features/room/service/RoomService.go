@@ -11,30 +11,16 @@ type IRoom interface {
 	AddRoom(room *db.Room)
 	GetRooms() []db.Room
 	GetRoomByPlaceId(placeId uint) db.Room
-	GetRoomById(id uint, room *db.Room) error
 	IsRoomNumberExists(roomNumber string) bool
-	RemoveRoomById(id uint) error
 	GetRoomByNumber(number string) db.Room
 }
 
 type IPlace interface {
-	GetPlaces() []db.Place
-	GetFreePlaces() []db.Place
 	GetFreePlacesByRoomId(roomId uint) []db.Place
 	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
-	GetPlacesByRoomId(roomId uint) []db.Place
-	GetPlaceById(id uint, place *db.Place) error
-	GetPlacesByParams(isMale bool, isFree bool) []db.Place
 }
 
 type IStudent interface {
-	AddStudent(student *db.Student) error
-	SetContract(student_id uint, contract_id uint) error
-	GetStudents() []db.Student
-	GetStudentById(id uint) db.Student
-	GetStudentByTicketId(ticket_id uint) db.Student
-	SetStudentToPlace(student_id uint, place_id uint) error
-	UnsetStudentFromPlace(student_id uint) error
 	GetStudentsByPlaceIds(place_ids []uint) []db.Student
 }
 
