@@ -8,7 +8,6 @@ type IStudentTicket interface {
 	AddStudentTicket(ticket *db.StudentTicket) error
 	GetStudentTickets() []db.StudentTicket
 	GetStudentTicketBySerialNumber(serialNumber string) db.StudentTicket
-	GetStudentTicketById(id uint) db.StudentTicket
 }
 
 type StudentTicketService struct {
