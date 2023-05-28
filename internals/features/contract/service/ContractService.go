@@ -9,8 +9,6 @@ import (
 type IContract interface {
 	AddContract() db.Contract
 	GetContracts() []db.Contract
-	GetContractById(id uint, contract *db.Contract) error
-	RemoveContractById(id uint) error
 }
 
 type IUserService interface {
