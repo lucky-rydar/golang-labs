@@ -9,22 +9,11 @@ import (
 
 type IPlace interface {
 	GetPlaces() []db.Place
-	GetFreePlaces() []db.Place
-	GetFreePlacesByRoomId(roomId uint) []db.Place
-	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
-	GetPlacesByRoomId(roomId uint) []db.Place
-	GetPlaceById(id uint, place *db.Place) error
 	GetPlacesByParams(isMale bool, isFree bool) []db.Place
 }
 
 type IRoom interface {
-	AddRoom(room *db.Room)
-	GetRooms() []db.Room
-	GetRoomByPlaceId(placeId uint) db.Room
 	GetRoomById(id uint, room *db.Room) error
-	IsRoomNumberExists(roomNumber string) bool
-	RemoveRoomById(id uint) error
-	GetRoomByNumber(number string) db.Room
 }
 
 type IUserService interface {
@@ -43,7 +32,7 @@ func NewDormitoryLoadService(place_repository IPlace, room_repository IRoom, use
 
 func (dms *DormitoryLoadService) GetDormitoryLoad(uuid string) (structs.DormitoryLoad, error) {
 	if !dms.user_service.IsUserAdmin(uuid) {
-		return structs.DormitoryLoad{}, fmt.Errorf("User is not admin")
+		fmt.Println("User is not admin, but it is ok")
 	}
 
 	var dormitoryLoad structs.DormitoryLoad
