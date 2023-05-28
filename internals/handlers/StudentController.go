@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/it-02/dormitory/internals/db"
 	"github.com/it-02/dormitory/internals/features/student/structs"
 )
 
