@@ -8,10 +8,7 @@ type IPlace interface {
 	GetPlaces() []db.Place
 	GetFreePlaces() []db.Place
 	GetFreePlacesByRoomId(roomId uint) []db.Place
-	GetOccupiedPlacesByRoomId(roomId uint) []db.Place
 	GetPlacesByRoomId(roomId uint) []db.Place
-	GetPlaceById(id uint, place *db.Place) error
-	GetPlacesByParams(isMale bool, isFree bool) []db.Place
 }
 
 type PlaceService struct {
