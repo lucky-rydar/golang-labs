@@ -9,11 +9,6 @@ import (
 )
 
 type IStudentService interface {
-	RegisterStudent(student *db.Student, student_ticket *db.StudentTicket) error
-	SignContract(student_ticket_number string) error
-	Settle(student_ticket_number string, roomNumber string) error
-	Unsettle(student_ticket_number string) error
-	Resettle(student_ticket_number string, roomNumber string) error
 	GetStudents(uuid string) (error, []structs.StudentRepr)
 }
 
